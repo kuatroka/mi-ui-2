@@ -10,6 +10,10 @@
 
 </script>
 
+<svelte:head>
+	<title>Superinvestors</title>
+</svelte:head>
+
 <div class="hidden flex-col md:flex">
 	<div class="flex-1 space-y-2 p-4 pt-4">
 		<div class="flex items-center justify-between space-y-2">
