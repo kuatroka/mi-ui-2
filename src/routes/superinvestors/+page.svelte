@@ -5,7 +5,10 @@
 	import {Overview, RecentSales	} from "$lib/components/dashboard";
 	import AreaSimple from "$lib/components/layerchart/area-simple/area-simple.svelte";
 	import AreaClipped from "$lib/components/layerchart/area-simple/area-clipped-tooltip.svelte";
-	// export let data;
+
+	import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
+	export let data;
+	$: entries_cik = data.ciks;
 
 
 </script>
@@ -83,7 +86,9 @@
 							<Card.Title>Overview</Card.Title>
 						</Card.Header>
 						<Card.Content>
-							<AreaSimple />
+							<DataTable data={entries_cik}
+	/>
+							<!-- <AreaSimple /> -->
 						</Card.Content>
 					</Card.Root>
 					<Card.Root class="col-span-3">

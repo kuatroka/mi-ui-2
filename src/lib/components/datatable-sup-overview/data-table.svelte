@@ -3,6 +3,7 @@
 	import { goto } from "$app/navigation";
 	import { page } from '$app/stores'
 	import debounce from 'debounce';	
+	import { format } from 'svelte-ux';
 	
 	import {createTable, Subscribe, Render,	createRender} from "svelte-headless-table";
 	import {addSortBy, addPagination,	addTableFilter,
@@ -20,7 +21,6 @@
 
 	export let order_by: string = "";
 	export let order_dir: string = "";
-
 
 	export let data: Cik[]; 
 	const entries: Writable<Cik[]> = writable([]);
@@ -50,7 +50,9 @@
 		table.column({
 			header: "CIK",
 			accessor: "cik",
-			plugins: { sort: { disable: false }, filter: { exclude: false } }
+			plugins: { sort: { disable: false }, 
+			filter: { exclude: false }
+		}
 		}),
 		table.column({ header: "Superinvestor", accessor: "cik_name"}),
 
@@ -58,9 +60,7 @@
 			header: "Cumulative TWRR",
 			accessor: "cum_twrr_cons",
 			cell: ({ value }) => {
-				const formatted = new Intl.NumberFormat("en-US", {
-					style: "percent",
-				}).format(value);
+				const formatted = format(value/100, "percent");
 				return formatted;
     },
 			plugins: {
@@ -71,6 +71,17 @@
 					exclude: true
 				}
 			}
+		}),
+
+
+		table.column({
+			header: "Cumulative TWRR Yahoo",
+			accessor: "cum_twrr_yahoo",
+			cell: ({ value }) => {
+				const formatted = format(value/100, "percent");
+				return formatted;
+    },
+	
 		}),
 		
 		table.column({
@@ -83,7 +94,7 @@
 				sort: {
 					disable: true
 				}
-			}
+			},
 		})
 	]);
 
@@ -100,15 +111,16 @@
 	const { columnWidths } = pluginStates.resize;
 
 	const { hiddenColumnIds } = pluginStates.hide;
+	const initialHiddenColumnIds = ['cik', 'cum_twrr_cons'];
 	const ids = flatColumns.map((c) => c.id);
-	let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-
+	let hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumnIds.includes(id)]));
+	
 	$: $hiddenColumnIds = Object.entries(hideForId)
-		.filter(([, hide]) => !hide)
-		.map(([id]) => id);
+	.filter(([, hide]) => !hide)
+	.map(([id]) => id);
 
+	
 	let { pageIndex, pageSize } = pluginStates.page;
-	const { filterValue } = pluginStates.filter;
 
 	$: q = $page.url.searchParams.get('q') || '';
 	$: skip_param = Number($page.url.searchParams.get('skip') || 0);
@@ -135,6 +147,7 @@
 	// };
 
 	const hideableCols = ["cum_twrr_cons", "cik"];
+
 	$: _sortKeys = $sortKeys;
 	
 	$: _totalViewedEntries = ($pageIndex * $pageSize + $pageRows.length)
@@ -146,7 +159,7 @@
 	$: order_dir = _sortKeys[0]?.order || '';
 
 	const handleFilterChange = debounce(() => {
-	goto(`/shadcn-table?limit=${$pageSize}&skip=${$pageSize * $pageIndex}&q=${filter}&order_by=${order_by}&order_dir=${order_dir}`,
+	goto(`/superinvestors?limit=${$pageSize}&skip=${$pageSize * $pageIndex}&q=${filter}&order_by=${order_by}&order_dir=${order_dir}`,
 		{  replaceState: true, keepFocus: true });
   }, 200);
 
@@ -154,11 +167,7 @@
 // and then using search box. The paging gets all messed up
 
 </script>
-<!-- skip_param: {skip_param} <br>
-limit_param: {limit_param} <br>
-$pageIndex + 1:    {$pageIndex + 1} <br>
-_totalPages:    {_totalPages} <br>
-$pageRows.length:    {$pageRows.length} <br> -->
+<!-- <pre>$hiddenColumnIds = {JSON.stringify($hiddenColumnIds, null, 2)}</pre> -->
 
 <div class="w-full">
 	<div class="mb-4 flex items-center gap-4">

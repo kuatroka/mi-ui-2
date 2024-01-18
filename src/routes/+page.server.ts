@@ -1,9 +1,8 @@
-// import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
+import { getTotals } from '$lib/server/db/sqlite';
 
-// export const load = (async ({locals}) => {
-//     console.log(locals);
-//     return {
-//         user: locals.user,
-//         locals
-//     };
-// }) satisfies PageServerLoad;
+export const load: PageServerLoad = async () => {
+	return {
+		totals: await getTotals()
+	};
+} ;

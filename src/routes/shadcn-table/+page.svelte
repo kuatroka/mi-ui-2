@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DataTable from "./data-table.svelte";
+	import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
 	export let data;
 	$: entries_cik = data.ciks;
 

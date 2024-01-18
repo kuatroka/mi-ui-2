@@ -1,3 +1,15 @@
+export type Totals = {
+	ttl_ciks: number;
+	ttl_assets: number;
+	ttl_years: number;
+	ttl_quarters: number;
+	ttl_positions: number;
+	last_full_qtr: number;
+	last_full_value: number;
+};
+
+
+
 export type Charachter = {
 	id: number;
 	name: string;
@@ -11,6 +23,7 @@ export type Cik = {
 	cik: string;
 	cik_name: string;
 	cum_twrr_cons: number;
+	cum_twrr_yahoo: number;
 	value: number;
 	quarter: string;
 };
