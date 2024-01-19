@@ -1,6 +1,6 @@
 import { SQLITE_FULL_PATH } from '$env/static/private';
 import Database from 'better-sqlite3';
-import type { Totals, Cik } from './types';
+import type { Totals, Cik, QtrStats } from './types';
 
 const db = new Database(SQLITE_FULL_PATH, { verbose: console.log }); // remove in prod
 
@@ -23,7 +23,26 @@ export function getTotals(): Totals[] {
 	return rows as Totals[];
 }
 
-
+//  ### every quarter and value
+export const getQtrStats = (): QtrStats[] => {
+	const sql = `
+	SELECT
+	quarter,
+	quarter_end_date,
+	ttl_value_all_ciks_per_qtr,
+	ttl_num_ciks_per_qtr,
+	ttl_num_assets_all_ciks_per_qtr,
+	mean_curr_twrr_all_ciks_per_qtr_cons,
+	mean_curr_twrr_all_ciks_per_qtr_yahoo,
+	is_quarter_completed
+	FROM every_qtr_twrr
+	`;
+	const stmnt = db.prepare(sql);
+	const rows = stmnt.all();
+	console.log(rows.slice(0, 2));
+	console.log(rows.length);
+	return rows as QtrStats[];
+};
 
 export function getCik(
 	limit: number,

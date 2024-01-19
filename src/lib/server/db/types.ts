@@ -1,3 +1,14 @@
+export type QtrStats = {
+	quarter_end_date: string;
+	quarter: string;
+	ttl_value_all_ciks_per_qtr: number;
+	ttl_num_ciks_per_qtr: number;
+	ttl_num_assets_all_ciks_per_qtr: number;
+	mean_curr_twrr_all_ciks_per_qtr_cons: number;
+	mean_curr_twrr_all_ciks_per_qtr_yahoo: number;
+	is_quarter_completed: string;
+};
+
 export type Totals = {
 	ttl_ciks: number;
 	ttl_assets: number;
@@ -7,8 +18,6 @@ export type Totals = {
 	last_full_qtr: number;
 	last_full_value: number;
 };
-
-
 
 export type Charachter = {
 	id: number;

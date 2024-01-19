@@ -13,8 +13,6 @@
     import { appleStock} from './dateSeries';
     export let data = appleStock;
 
-    
-
 
 </script>
 <!-- <h1>Area - Clipped Area on Tooltip</h1> -->
@@ -22,9 +20,9 @@
 <div class="h-[300px] border rounded">
     <Chart
       data={data}
-      x="date"
+      x="quarter_end_date"
       xScale={scaleTime()}
-      y="value"
+      y="ttl_value_all_ciks_per_qtr"
       yDomain={[0, null]}
       yNice
       padding={{ top: 48, bottom: 24 }}
@@ -68,7 +66,7 @@
         class="text-sm font-semibold text-chart/100 leading-3"
         let:data
       >
-         ${format(data.value, "metric")}
+        {format(data.ttl_value_all_ciks_per_qtr, "currency")}
       </Tooltip>
   
       <Tooltip
@@ -78,7 +76,7 @@
         class="text-sm font-semibold leading-3"
         let:data
       >
-        {formatDate(data.date, 'y QQQ')}
+        {format(data.quarter_end_date, PeriodType.Day)}
       </Tooltip>
   
       <Tooltip
@@ -89,7 +87,7 @@
         class="text-sm font-semibold bg-chart text-white leading-3 px-2 py-1 rounded whitespace-nowrap"
         let:data
       >
-        {formatDate(data.date, 'y QQQ')}
+        {format(data.quarter_end_date, PeriodType.Day)}
       </Tooltip>
     </Chart>
   </div>

@@ -8,6 +8,7 @@
 	import {createTable, Subscribe, Render,	createRender} from "svelte-headless-table";
 	import {addSortBy, addPagination,	addTableFilter,
 		addSelectedRows,addHiddenColumns, addResizedColumns	} from "svelte-headless-table/plugins";
+
 	import { readable, writable, type Writable } from "svelte/store";
 	import * as Table from "$lib/components/ui/table";
 	import  Actions  from "./data-table-actions.svelte";
@@ -251,13 +252,16 @@
 									<Table.Cell 
 										{...attrs}
 									>
-									{#if cell.id === 'cik_name'}
-										<!-- <a href="/{row.cells.find(c => c.id === 'cik')?.value}"  -->
-										<a href="/{row.cells[0].value}" 
-										class="line-clamp-1">{cell.value}</a>
-									{:else}
-										<Render of={cell.render()} />
-									{/if}
+                                    {#if cell.id === 'cik_name'}
+                                    <!-- <a href="/{row.cells[0].id}"  -->
+                                        <!-- // the below works but extremely inneficient -->
+                                        <!-- <a href="/{data.find(d => d.cik_name === cell.value)?.cik}" -->
+                                        <!-- <a href="/{row.cells.find(c => c.id === 'cik')?.value}"   -->
+                                            <a href="/{row.original.cik}"
+                                            class="line-clamp-1">{cell.value}</a>
+                                    {:else}
+                                        <Render of={cell.render()} />
+                                    {/if}
 									</Table.Cell>
 								</Subscribe>
 							{/each}
