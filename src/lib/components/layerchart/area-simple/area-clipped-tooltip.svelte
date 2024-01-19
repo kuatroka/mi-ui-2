@@ -8,18 +8,13 @@
     LinearGradient, RectClipPath, AreaStack } from 'layerchart'
     // import { createDateSeries } from 'layerchart/genData';
     import { createDateSeries } from '../../../../../node_modules/layerchart/dist/utils/genData';
-    import { pivotLonger } from '../../../../../node_modules/layerchart/dist/utils/pivot';
-    // import { flatten } from '../../../node_modules/svelte-ux/dist/utils/array';
     import { appleStock} from './dateSeries';
-    export let data = appleStock;
-
-    
+    export let data = appleStock;    
 
 
 </script>
-<!-- <h1>Area - Clipped Area on Tooltip</h1> -->
 
-<div class="h-[300px] border rounded">
+<div class="h-[400px] border rounded">
     <Chart
       data={data}
       x="date"

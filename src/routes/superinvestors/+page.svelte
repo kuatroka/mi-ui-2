@@ -10,7 +10,6 @@
 	import {format} from 'svelte-ux';
 
 	import {Overview, RecentSales	} from "$lib/components/dashboard";
-	import AreaSimple from "$lib/components/layerchart/area-simple/area-simple.svelte";
 	import AreaClipped from "$lib/components/layerchart/area-simple/area-clipped-tooltip.svelte";
 
 	import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
@@ -33,7 +32,8 @@
 	$: entries_qtrstats_chart = entries_qtrstats.map(entry => ({
 			date: new Date(entry.quarter_end_date),
 			value: entry.ttl_value_all_ciks_per_qtr
-	})).reverse();
+	}));
+
 	
 
 
@@ -60,33 +60,38 @@
 		<div class="flex items-center justify-between space-y-2">
 			<h2 class="text-3xl font-bold tracking-tight">All Superinvestors</h2>
 
-			<Toggle
-			bind:pressed={showIncomple}
-			aria-label="toggle completed quarters"
-			>
-			<!-- onPressedChange={handleCheckedChange} -->
-			Show Incomplete Qtr
-			</Toggle>
+			
+			<div class="flex flex-col items-center space-y-2">
+				<Toggle
+				bind:pressed={showIncomple}
+				aria-label="toggle completed quarters"
+				>
+				<!-- onPressedChange={handleCheckedChange} -->
+				Show Incomplete Qtr
+				</Toggle>
+
+				<div class="flex items-center gap-2">
+					<Switch 
+					id="add-partial-qtr"
+					class="ml-auto"
+					bind:checked={showIncomple}
+					>
+					<!-- onCheckedChange={handleCheckedChange} -->
+				</Switch>
+				<Label for="add-partial-qtr">Show partial Qtr</Label>
+			</div>
+		</div>
 		</div>
 
 		<Tabs.Root value="overview" class="space-y-2">
 			<div class="flex items-center gap-2">
-			<Tabs.List>
-				<Tabs.Trigger value="overview">Overview</Tabs.Trigger>
-				<Tabs.Trigger value="analytics">Analytics</Tabs.Trigger>
-				<Tabs.Trigger value="reports" disabled>Reports</Tabs.Trigger>
-				<Tabs.Trigger value="notifications" disabled>Notifications</Tabs.Trigger>
-			</Tabs.List>
-			<div class="flex items-center space-x-2">
-				<Switch 
-				id="add-partial-qtr"
-				class="ml-auto"
-				bind:checked={showIncomple}
-				>
-				<!-- onCheckedChange={handleCheckedChange} -->
-				</Switch>
-				<Label for="add-partial-qtr">Show partial Qtr</Label>
-			</div>
+				<Tabs.List>
+					<Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+					<Tabs.Trigger value="analytics">Analytics</Tabs.Trigger>
+					<Tabs.Trigger value="reports" disabled>Reports</Tabs.Trigger>
+					<Tabs.Trigger value="notifications" disabled>Notifications</Tabs.Trigger>
+				</Tabs.List>
+
 
 			</div>
 			<Tabs.Content value="overview" class="space-y-2">
@@ -141,31 +146,37 @@
 				</div>
 				<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-7">
 					<Card.Root class="col-span-4">
-						<Tabs.List class='w-full flex'>
-							<Tabs.Trigger class="flex-grow text-center" value="performance">Performance</Tabs.Trigger>
-							<Tabs.Trigger class="flex-grow text-center" value="value">Value</Tabs.Trigger>
-							<Tabs.Trigger class="flex-grow text-center" value="assets" disabled>Assets</Tabs.Trigger>
-							<Tabs.Trigger class="flex-grow text-center" value="positions" disabled>Positions</Tabs.Trigger>
-						</Tabs.List>
-						<Tabs.Content value="performance" class="space-y-2">
+						<Tabs.Root>
+							<Tabs.List class='w-full flex'>
+								<Tabs.Trigger class="flex-grow text-center" value="performance">Performance</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="value">Value</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="assets" disabled>Assets</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="positions" disabled>Positions</Tabs.Trigger>
+							</Tabs.List>
 
-						</Tabs.Content>
-						<Tabs.Content value="value" class="space-y-2">
+							<Tabs.Content value="performance" class="space-y-2">
+								<!-- <Card.Header>
+									<Card.Title>Overview</Card.Title>
+								</Card.Header> -->
+								<Card.Content class="min-h-[450px]">
+										<DataTable data={entries_cik}/>
+									<!-- <AreaSimple /> -->
+								</Card.Content>								
+							</Tabs.Content>
 
-						</Tabs.Content>
-						<Tabs.Content value="assets" class="space-y-2">
+							<Tabs.Content value="value" class="space-y-2">
+								<Card.Content class="min-h-[450px]">
 
-						</Tabs.Content>
-						<Tabs.Content value="positions" class="space-y-2">
+									<AreaClipped  data={entries_qtrstats_chart}/>								
+								</Card.Content>
+							</Tabs.Content>
 
-						</Tabs.Content>
-						<Card.Header>
-							<Card.Title>Overview</Card.Title>
-						</Card.Header>
-						<Card.Content>
-							<DataTable data={entries_cik}/>
-							<!-- <AreaSimple /> -->
-						</Card.Content>
+							<Tabs.Content value="assets" class="space-y-2">	
+							</Tabs.Content>
+
+							<Tabs.Content value="positions" class="space-y-2">								
+							</Tabs.Content>
+						</Tabs.Root>
 					</Card.Root>
 					<Card.Root class="col-span-3">
 						<Card.Header>

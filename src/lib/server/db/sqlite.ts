@@ -36,6 +36,7 @@ export const getQtrStats = (): QtrStats[] => {
 	mean_curr_twrr_all_ciks_per_qtr_yahoo,
 	is_quarter_completed
 	FROM every_qtr_twrr
+	ORDER BY quarter
 	`;
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all();

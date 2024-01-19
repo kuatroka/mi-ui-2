@@ -34,9 +34,9 @@
 	FAQ
 </a>
 	<a
-	href="/chart"
+	href="/playground"
 	class="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
 >
-	chart
+	playground
 </a>
 </nav>

@@ -159,8 +159,10 @@
 	$: order_by = _sortKeys[0]?.id || '';
 	$: order_dir = _sortKeys[0]?.order || '';
 
+	export const pathname = $page.url.pathname;
+
 	const handleFilterChange = debounce(() => {
-	goto(`/superinvestors?limit=${$pageSize}&skip=${$pageSize * $pageIndex}&q=${filter}&order_by=${order_by}&order_dir=${order_dir}`,
+	goto(`${pathname}?limit=${$pageSize}&skip=${$pageSize * $pageIndex}&q=${filter}&order_by=${order_by}&order_dir=${order_dir}`,
 		{  replaceState: true, keepFocus: true });
   }, 200);
 
@@ -168,6 +170,7 @@
 // and then using search box. The paging gets all messed up
 
 </script>
+<!-- {pathname} -->
 <!-- <pre>$hiddenColumnIds = {JSON.stringify($hiddenColumnIds, null, 2)}</pre> -->
 
 <div class="w-full">
@@ -243,7 +246,7 @@
 			<Table.Body {...$tableBodyAttrs}>
 				{#each $pageRows as row (row.id)}
 					<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-						<Table.Row 
+						<Table.Row
 							{...rowAttrs}
 							data-state={$selectedDataIds[row.id] && "selected"}
 						>

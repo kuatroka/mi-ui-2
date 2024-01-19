@@ -1,6 +1,5 @@
 <script lang="ts">
     import {scaleTime } from 'd3-scale';
-    import { flatGroup } from 'd3-array';
     import { format as formatDate } from 'date-fns';
     import { PeriodType, format } from 'svelte-ux';
     import {Chart,  Svg, Axis, Area, Tooltip, TooltipItem, Highlight} from 'layerchart'
