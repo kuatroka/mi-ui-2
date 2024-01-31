@@ -1,8 +1,8 @@
-import { SQLITE_SHORT_PATH } from '$env/static/private';
+import { SQLITE_FULL_PATH } from '$env/static/private';
 import Database from 'better-sqlite3';
 import type { Totals, Cik, QtrStats } from './types';
 
-const db = new Database(SQLITE_SHORT_PATH, { verbose: console.log }); // remove in prod
+const db = new Database(SQLITE_FULL_PATH, { verbose: console.log }); // remove in prod
 
 // ### Totals
 export function getTotals(): Totals[] {

@@ -37,13 +37,13 @@
     
     
 
-    $: entries_qtrstats_chart = entries_qtrstats.map(entry => ({
+    $: entries_qtrstats_chart = entries_qtrstats.filter(entry => entry.open_close_ratio !== null).map(entry => ({
 			date: new Date(entry.quarter_end_date),
 			value: entry.ttl_value_all_ciks_per_qtr,
 			assets: entry.ttl_num_assets_all_ciks_per_qtr,
 			ciks: entry.ttl_num_ciks_per_qtr,
 			positions: entry.ttl_num_positions_per_qtr,
-            open_close: entry.open_close_ratio
+      open_close: entry.open_close_ratio
 	}));
 
     let data2 = createDateSeries({

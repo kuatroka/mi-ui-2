@@ -24,16 +24,17 @@ import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/ge
     };
 
 
-  $: entries_qtrstats_chart = entries_qtrstats.map(entry => ({
+  $: entries_qtrstats_chart = entries_qtrstats.filter(entry => entry.open_close_ratio !== null).map(entry => ({
 			date: new Date(entry.quarter_end_date),
 			value: entry.ttl_value_all_ciks_per_qtr,
 			assets: entry.ttl_num_assets_all_ciks_per_qtr,
 			ciks: entry.ttl_num_ciks_per_qtr,
 			positions: entry.ttl_num_positions_per_qtr,
-            open_close: entry.open_close_ratio
+      open_close: entry.open_close_ratio
 	}));
+  
 </script>
-<h1 class="text-3xl my-2"> Synthetic Data</h1>
+<h1> Synthetic Data</h1>
 {#each data2.slice(0,5) as entry }
 <p>{entry.date} - {entry.open_close}</p>
     
@@ -41,8 +42,8 @@ import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/ge
 
 <Line data={data2} y="open_close"/>
 
-<h1 class="text-3xl my-2"> Real Data</h1>
-{#each entries_qtrstats_chart.slice(0,10) as entry }
+<h1> Real Data</h1>
+{#each entries_qtrstats_chart.slice(0,5) as entry }
 <p>{entry.date} - {entry.open_close}</p>
     
 {/each}
