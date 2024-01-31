@@ -10,6 +10,8 @@
     import { createDateSeries } from '../../../../../node_modules/layerchart/dist/utils/genData';
     import { appleStock} from './dateSeries';
     export let data = appleStock;    
+    export let x: string = 'date';
+    export let y: string = 'value';
 
 
 </script>
@@ -17,9 +19,9 @@
 <div class="h-[400px] border rounded">
     <Chart
       data={data}
-      x="date"
+      x={x}
       xScale={scaleTime()}
-      y="value"
+      y={y}
       yDomain={[0, null]}
       yNice
       padding={{ top: 48, bottom: 24 }}
@@ -53,7 +55,9 @@
           points
           lines={{ class: "stroke-chart [stroke-dasharray:unset]" }}
         />
-        <Axis placement="bottom" />
+        <Axis placement="bottom" ticks={6}
+        labelProps={{ class:"fill-primary text-sm" }}
+        />
       </Svg>
   
       <Tooltip
@@ -63,7 +67,7 @@
         class="text-sm font-semibold text-chart/100 leading-3"
         let:data
       >
-         ${format(data.value, "metric")}
+         ${format(data[y], "metric")}
       </Tooltip>
   
       <Tooltip
@@ -73,7 +77,7 @@
         class="text-sm font-semibold leading-3"
         let:data
       >
-        {formatDate(data.date, 'y QQQ')}
+        {formatDate(data[x], 'y QQQ')}
       </Tooltip>
   
       <Tooltip
@@ -84,8 +88,13 @@
         class="text-sm font-semibold bg-chart text-white leading-3 px-2 py-1 rounded whitespace-nowrap"
         let:data
       >
-        {formatDate(data.date, 'y QQQ')}
+        {formatDate(data[x], 'y QQQ')}
       </Tooltip>
     </Chart>
   </div>
 
+  <!-- <style>
+    :global(.x-axis .tick text) {
+      @apply text-lg; /* Use the appropriate Tailwind font size class */
+    }
+  </style> -->

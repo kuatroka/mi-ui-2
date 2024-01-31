@@ -260,7 +260,7 @@
                                         <!-- // the below works but extremely inneficient -->
                                         <!-- <a href="/{data.find(d => d.cik_name === cell.value)?.cik}" -->
                                         <!-- <a href="/{row.cells.find(c => c.id === 'cik')?.value}"   -->
-                                            <a href="/{row.original.cik}"
+                                            <a href="/superinvestors/{row.original.cik}"
                                             class="line-clamp-1">{cell.value}</a>
                                     {:else}
                                         <Render of={cell.render()} />

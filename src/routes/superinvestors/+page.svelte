@@ -1,29 +1,34 @@
 <script lang="ts">
 	import {Activity,CreditCard,DollarSign,
-			Landmark,Users, CalendarDays, CandlestickChart} from "lucide-svelte";
+			Landmark,Users, CalendarDays, CandlestickChart,
+			Maximize2, Maximize} from "lucide-svelte";
 	import * as Card from "$lib/components/ui/card";
 	import * as Tabs from "$lib/components/ui/tabs";
 	import { Switch } from "$lib/components/ui/switch";
 	import { Toggle } from "$lib/components/ui/toggle";
 	import { Label } from "$lib/components/ui/label";
+	import { Button } from "$lib/components/ui/button";
 	
 	import {format} from 'svelte-ux';
 
 	import {Overview, RecentSales	} from "$lib/components/dashboard";
 	import AreaClipped from "$lib/components/layerchart/area-simple/area-clipped-tooltip.svelte";
+	import Bar from '$lib/components/layerchart/bar/bar.svelte'
 
 	import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
 	export let data;
 	$: entries_cik = data.ciks;
 
 	let original_qtrstats = data.qtrStats; // Store the original data
+
     let entries_qtrstats = original_qtrstats; // This will be modified based on the toggle
     let showIncomple = false; // State for the toggle
+
 	function handleCheckedChange(event: CustomEvent<boolean>) {
     showIncomple = event.detail;
 }
 
-	  $: if (showIncomple) {
+	$: if (showIncomple) {
 		entries_qtrstats = original_qtrstats;
 	} else {
         entries_qtrstats = original_qtrstats.filter(entry => entry.is_quarter_completed == 'YES');
@@ -31,15 +36,26 @@
 	
 	$: entries_qtrstats_chart = entries_qtrstats.map(entry => ({
 			date: new Date(entry.quarter_end_date),
-			value: entry.ttl_value_all_ciks_per_qtr
+			value: entry.ttl_value_all_ciks_per_qtr,
+			assets: entry.ttl_num_assets_all_ciks_per_qtr,
+			ciks: entry.ttl_num_ciks_per_qtr,
+			positions: entry.ttl_num_positions_per_qtr
 	}));
+
+	let isCardExpanded = false;
+
+    function toggleCardSize() {
+        isCardExpanded = !isCardExpanded;
+    }
+
+
 
 	
 
 
 </script>
 
-<!-- showCompleted: {showCompleted} -->
+<!-- showCompleted: {entries_qtrstats_chart} -->
 
 <!-- {#each entries_qtrstats_chart.reverse().slice(0, 5) as entry}
 <p>{entry.date} : {entry.value} </p>
@@ -56,7 +72,7 @@
 </svelte:head>
 
 <div class="hidden flex-col md:flex">
-	<div class="flex-1 space-y-2 p-4 pt-4">
+	<div class="flex-1 space-y-2 p-2">
 		<div class="flex items-center justify-between space-y-2">
 			<h2 class="text-3xl font-bold tracking-tight">All Superinvestors</h2>
 
@@ -100,12 +116,12 @@
 						<Card.Header
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
-							<Card.Title class="text-sm font-medium">Total Value</Card.Title>
+							<Card.Title class="text-sm font-medium">Value</Card.Title>
 							<DollarSign class="h-8 w-8 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">${format(data.totals[0].last_full_value, "metric")}</div>
-							<p class="text-xs text-muted-foreground">Last full qtr: {data.totals[0].last_full_qtr}</p>
+							<p class="text-xs text-muted-foreground">Last complete quarter: {data.totals[0].last_full_qtr}</p>
 						</Card.Content>
 					</Card.Root>
 					<Card.Root>
@@ -123,7 +139,7 @@
 						<Card.Header
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
-							<Card.Title class="text-sm font-medium">Total Years</Card.Title>
+							<Card.Title class="text-sm font-medium">Years</Card.Title>
 							<CalendarDays class="h-8 w-8 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
@@ -135,23 +151,24 @@
 						<Card.Header
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
-							<Card.Title class="text-sm font-medium">Financial Assets</Card.Title>
+							<Card.Title class="text-sm font-medium">Assets</Card.Title>
 							<CandlestickChart class="h-8 w-8 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">{format(data.totals[0].ttl_assets, "integer")}</div>
-							<p class="text-xs text-muted-foreground">Traded across {format(data.totals[0].ttl_positions, "integer")} Positions</p>
+							<p class="text-xs text-muted-foreground">Held in {format(data.totals[0].ttl_positions, "integer")} Positions</p>
 						</Card.Content>
 					</Card.Root>
 				</div>
 				<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-7">
-					<Card.Root class="col-span-4">
+					<Card.Root class={isCardExpanded ? 'col-span-7' : 'col-span-4'}>
 						<Tabs.Root>
 							<Tabs.List class='w-full flex'>
 								<Tabs.Trigger class="flex-grow text-center" value="performance">Performance</Tabs.Trigger>
 								<Tabs.Trigger class="flex-grow text-center" value="value">Value</Tabs.Trigger>
-								<Tabs.Trigger class="flex-grow text-center" value="assets" disabled>Assets</Tabs.Trigger>
-								<Tabs.Trigger class="flex-grow text-center" value="positions" disabled>Positions</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="superinvestors">Superinvestors</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="assets">Assets</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="positions">Positions</Tabs.Trigger>
 							</Tabs.List>
 
 							<Tabs.Content value="performance" class="space-y-2">
@@ -167,15 +184,37 @@
 							<Tabs.Content value="value" class="space-y-2">
 								<Card.Content class="min-h-[450px]">
 
-									<AreaClipped  data={entries_qtrstats_chart}/>								
+									<AreaClipped  data={entries_qtrstats_chart} y='value'/>	
+									<!-- <Button class="m-1"
+									on:click={toggleCardSize}
+									>
+									<Maximize />
+									</Button>							 -->
+								</Card.Content>
+							</Tabs.Content>
+							
+							
+							<Tabs.Content value="superinvestors" class="space-y-2">								
+								<Card.Content class="min-h-[450px]">
+									
+									<Bar data={entries_qtrstats_chart} y='ciks'/>								
+								</Card.Content>
+							</Tabs.Content>
+							<Tabs.Content value="assets" class="space-y-2">	
+								<Card.Content class="min-h-[450px]">
+	
+									<Bar data={entries_qtrstats_chart} y='assets'/>								
 								</Card.Content>
 							</Tabs.Content>
 
-							<Tabs.Content value="assets" class="space-y-2">	
+							<Tabs.Content value="positions" class="space-y-2">								
+								<Card.Content class="min-h-[450px]">
+	
+									<Bar data={entries_qtrstats_chart} y='positions'/>								
+								</Card.Content>
+								
 							</Tabs.Content>
 
-							<Tabs.Content value="positions" class="space-y-2">								
-							</Tabs.Content>
 						</Tabs.Root>
 					</Card.Root>
 					<Card.Root class="col-span-3">
@@ -200,7 +239,7 @@
 							<!-- <AreaClipped /> -->
 						</Card.Content>
 					</Card.Root>
-					<Card.Root class="col-span-3">
+					<!-- <Card.Root class="col-span-3">
 						<Card.Header>
 							<Card.Title>Recent Sales</Card.Title>
 							<Card.Description>You made 265 sales this month.</Card.Description>
@@ -208,7 +247,7 @@
 						<Card.Content>
 							<RecentSales />
 						</Card.Content>
-					</Card.Root>
+					</Card.Root> -->
 				</div>
 			</Tabs.Content>
 			<Tabs.Content value="analytics" class="space-y-2">

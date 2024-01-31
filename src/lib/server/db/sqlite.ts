@@ -32,6 +32,8 @@ export const getQtrStats = (): QtrStats[] => {
 	ttl_value_all_ciks_per_qtr,
 	ttl_num_ciks_per_qtr,
 	ttl_num_assets_all_ciks_per_qtr,
+	ttl_num_positions_per_qtr,
+	open_close_ratio,
 	mean_curr_twrr_all_ciks_per_qtr_cons,
 	mean_curr_twrr_all_ciks_per_qtr_yahoo,
 	is_quarter_completed
