@@ -5,13 +5,12 @@
     import { PeriodType, formatDate, format as formatMetric } from 'svelte-ux';
     import {Chart,  Svg, Axis, Bars, Tooltip, TooltipItem, Highlight, Spline } from 'layerchart'
     import { createDateSeries } from '../../../../../node_modules/layerchart/dist/utils/genData';
-	import { takeEvery } from 'layercake';
     export let data = createDateSeries({
-    count: 30,
-    min: 20,
-    max: 100,
-    value: 'integer',
-    keys: ['value', 'baseline'],
+    count: 100,
+    min: 0.80,
+    max: 1.5,
+    value: 'number',
+    keys: ['assets', 'baseline'],
   });
 
   export let x: string = 'date';
@@ -27,22 +26,21 @@
     x={x}
     xScale={scaleTime()}
     y={y}
-    yDomain={[0, null]}
+    yDomain={[0, maxValue]}
     yNice
     padding={{ left: 26, bottom: 24 }}
     tooltip
   >
     <Svg>
       <Axis placement="left" grid  format={(d) => formatMetric(d, 'metric')}/>
-        <Axis placement="bottom" ticks={6}
-
-  rule
-/>
-<Spline class="stroke-2 fill-chart" />
+      <Axis placement="bottom" ticks={6}
+      rule
+      />
+<Spline class="stroke-2 stroke-chart"/>
 <Highlight points lines />
     </Svg>
     <Tooltip header={(data) => format(data[x], 'y QQQ')} let:data>
-      <TooltipItem label={y} value={formatMetric(data[y], 'integer')} />
+      <TooltipItem label={y} value={formatMetric(data[y], 'decimal')} />
     </Tooltip>
   </Chart>
 </div>

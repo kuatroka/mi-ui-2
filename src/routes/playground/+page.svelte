@@ -1,9 +1,10 @@
 <script lang="ts">
     import { page } from '$app/stores'
     import type { ComponentProps } from 'svelte';
-    import {Maximize} from "lucide-svelte";
+    import { Maximize } from "lucide-svelte";
 
     import { ToggleGroup as ToggleGroupUX, ToggleOption, TogglePanel } from 'svelte-ux';
+    import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/genData';
     
 
     import AreaSimple from "$lib/components/layerchart/area-simple/area-simple.svelte";
@@ -45,6 +46,14 @@
             open_close: entry.open_close_ratio
 	}));
 
+    let data2 = createDateSeries({
+    count: 100,
+    min: 0.80,
+    max: 1.5,
+    value: 'number',
+    keys: ['assets', 'baseline'],
+  });
+
     let isCardExpanded = false;
 
     function toggleCardSize() {
@@ -52,20 +61,20 @@
     };
 
     let variant: ComponentProps<ToggleGroupUX>['variant'] = 'default';
-  let size: ComponentProps<ToggleGroupUX>['size'] = 'md';
-  let rounded: ComponentProps<ToggleGroupUX>['rounded'] = true;
-  let inset: ComponentProps<ToggleGroupUX>['inset'] = false;
-  let gap: ComponentProps<ToggleGroupUX>['gap'] = false;
-  let vertical: ComponentProps<ToggleGroupUX>['vertical'] = false;
-  let showPanes = false;
+    let size: ComponentProps<ToggleGroupUX>['size'] = 'md';
+    let rounded: ComponentProps<ToggleGroupUX>['rounded'] = true;
+    let inset: ComponentProps<ToggleGroupUX>['inset'] = false;
+    let gap: ComponentProps<ToggleGroupUX>['gap'] = false;
+    let vertical: ComponentProps<ToggleGroupUX>['vertical'] = false;
+    let showPanes = false;
 
-  let selectedStr = 'a';
-
-
-
+    let selectedStr = 'a';
 
 </script>
-<!-- {fooSeries.sum()} -->
+{#each entries_qtrstats_chart.slice(0,8) as entry }
+<p>{entry.date} - {entry.open_close}</p>
+    
+{/each}
 
 <div class="flex flex-col items-end m-2 justify-end">
         <Toggle
@@ -168,7 +177,8 @@ data={entries_qtrstats_chart}
                         </Tabs.Content>
                         <Tabs.Content value="ratio_oc" class="space-y-2">
                             <Card.Content class="min-h-[450px]">
-                                    <Line data={entries_qtrstats_chart} y='positions'/>								
+                                    <Line data={entries_qtrstats_chart} y='open_close'
+                                     />								
                             </Card.Content>								
                         </Tabs.Content>
 

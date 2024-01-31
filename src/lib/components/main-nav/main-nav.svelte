@@ -38,5 +38,12 @@
 	class="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
 >
 	playground
-</a>
+	</a>
+
+	<a
+	href="/line_chart"
+	class="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+>
+	line chart
+	</a>
 </nav>
