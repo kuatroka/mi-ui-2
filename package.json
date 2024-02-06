@@ -36,6 +36,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@observablehq/plot": "^0.6.13",
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
     "@types/better-sqlite3": "^7.6.8",
     "@types/d3-array": "^3.2.1",

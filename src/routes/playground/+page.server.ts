@@ -11,7 +11,7 @@ export const load = async ({ url }) => {
 	console.log('q', q);
 
 	return {
-		ciks: await getCik(limit, q, skip, order_by, order_dir),
+		ciks: getCik(limit, q, skip, order_by, order_dir),
 		qtrStats: await getQtrStats()
 	};
 };

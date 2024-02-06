@@ -5,11 +5,14 @@
 
     import { ToggleGroup as ToggleGroupUX, ToggleOption, TogglePanel } from 'svelte-ux';
     import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/genData';
+    import { pivotLonger } from '../../../node_modules/layerchart/dist/utils/pivot';
+    import { flatGroup } from 'd3-array';
     
 
     import AreaSimple from "$lib/components/layerchart/area-simple/area-simple.svelte";
     import AreaClipped from "$lib/components/layerchart/area-simple/area-clipped-tooltip.svelte";
     import Line from "$lib/components/layerchart/line/line.svelte"
+    import MultiLine from "$lib/components/layerchart/line/line-multiseries.svelte"
     import Bar from '$lib/components/layerchart/bar/bar.svelte'
 
     import * as Card from "$lib/components/ui/card";
@@ -22,10 +25,10 @@
 
 
     import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
-    $: pathname = $page.url.pathname;
+
 	export let data;
-	$: entries_cik = data.ciks;
-    $: entries_qtrstats = data.qtrStats
+	let entries_cik = data.ciks;
+    let entries_qtrstats = data.qtrStats; // originally it was declared with `$:`
 
     let original_qtrstats = data.qtrStats; // Store the original data
     let showIncomple = false; // State for the toggle
@@ -33,18 +36,51 @@
 		entries_qtrstats = original_qtrstats;
 	} else {
         entries_qtrstats = original_qtrstats.filter(entry => entry.is_quarter_completed == 'YES');
-    };
-    
-    
+    };    
 
-    $: entries_qtrstats_chart = entries_qtrstats.filter(entry => entry.open_close_ratio !== null).map(entry => ({
-			date: new Date(entry.quarter_end_date),
-			value: entry.ttl_value_all_ciks_per_qtr,
-			assets: entry.ttl_num_assets_all_ciks_per_qtr,
-			ciks: entry.ttl_num_ciks_per_qtr,
-			positions: entry.ttl_num_positions_per_qtr,
-      open_close: entry.open_close_ratio
-	}));
+    let entries_qtrstats_chart: any[]= []; 
+    let entries_ciks_new_closed: any[]= []; 
+    $: {
+        entries_qtrstats_chart = entries_qtrstats.map(entry => ({
+            date: new Date(entry.quarter_end_date),
+            value: entry.ttl_value_all_ciks_per_qtr,
+            assets: entry.ttl_num_assets_all_ciks_per_qtr,
+            ciks: entry.ttl_num_ciks_per_qtr,
+            positions: entry.ttl_num_positions_per_qtr,
+            open_close: entry.open_close_ratio,
+        }));
+
+        entries_ciks_new_closed = entries_qtrstats.map(entry => ({
+            date: new Date(entry.quarter_end_date),
+            closed_ciks: entry.num_stopped_ciks ?? 0,
+            new_ciks: entry.num_new_ciks ?? 0
+        }));
+        }
+
+    let series_columns = ['closed_ciks', 'new_ciks'];
+    let metric_column = 'value'
+    let category = 'type';
+    let series_colours = ['var(--color-rose-400)', 'var(--color-emerald-500'];
+
+    let categoryColours: Record<string, string> = {};
+    series_columns.forEach((column, index) => {
+      categoryColours[column] = series_colours[index];
+    });
+
+    // $: {
+    //     console.log(multiSeriesFlatData.slice(0, 4));
+    //     //  console.log(entries_qtrstats.length)
+    // }
+
+    let multiSeriesFlatData: any[]= [];
+    let dataByCategory: any[]= [];
+    $: { multiSeriesFlatData = pivotLonger(entries_ciks_new_closed, series_columns, category, metric_column);
+        dataByCategory = flatGroup(multiSeriesFlatData, (d) => d[category]);
+    }
+
+
+
+
 
     let data2 = createDateSeries({
     count: 100,
@@ -70,11 +106,13 @@
 
     let selectedStr = 'a';
 
+
 </script>
-{#each entries_qtrstats_chart.slice(0,8) as entry }
+<!-- {#each entries_qtrstats_chart.slice(0,4) as entry }
 <p>{entry.date} - {entry.open_close}</p>
     
-{/each}
+{/each} -->
+<!-- <pre>{JSON.stringify(multiSeriesFlatData.reverse().slice(0,4), null, 2)}</pre> -->
 
 <div class="flex flex-col items-end m-2 justify-end">
         <Toggle
@@ -178,7 +216,7 @@ data={entries_qtrstats_chart}
                         <Tabs.Content value="ratio_oc" class="space-y-2">
                             <Card.Content class="min-h-[450px]">
                                     <Line data={entries_qtrstats_chart} y='open_close'
-                                     />								
+                                    />								
                             </Card.Content>								
                         </Tabs.Content>
 
@@ -221,6 +259,34 @@ data={entries_qtrstats_chart}
 
 Toggle value: {selectedStr}
 
-  
-  
-  
+<!--  Line chart from layerchart-->
+
+<h1 class="text-2xl text-amber-500 ml-4 my-4"> Line Chat from layerchart - Real Data</h1>
+
+<Line data={entries_qtrstats_chart} y="open_close"/>
+
+<!-- <h1 class="text-2xl text-amber-500 ml-4  my-4"> MultiLine Chat from layerchart - Synthetic Data</h1>
+<MultiLine
+/> -->
+<h1 class="text-2xl text-amber-500 ml-4  my-4"> MultiLine Chat from layerchart - Real Data</h1>
+
+<div class="flex items-center gap-2">
+    <Switch 
+    id="add-partial-qtr"
+    class="ml-auto"
+    bind:checked={showIncomple}
+    >
+    <!-- onCheckedChange={handleCheckedChange} -->
+</Switch>
+<Label for="add-partial-qtr">Show partial Qtr</Label>
+</div>
+
+
+<MultiLine
+{categoryColours}
+{multiSeriesFlatData}
+{dataByCategory}
+/>
+
+
+

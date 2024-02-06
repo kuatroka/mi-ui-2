@@ -14,6 +14,7 @@
 	import {Overview, RecentSales	} from "$lib/components/dashboard";
 	import AreaClipped from "$lib/components/layerchart/area-simple/area-clipped-tooltip.svelte";
 	import Bar from '$lib/components/layerchart/bar/bar.svelte'
+	import Line from "$lib/components/layerchart/line/line.svelte"
 
 	import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
 	export let data;
@@ -39,8 +40,11 @@
 			value: entry.ttl_value_all_ciks_per_qtr,
 			assets: entry.ttl_num_assets_all_ciks_per_qtr,
 			ciks: entry.ttl_num_ciks_per_qtr,
-			positions: entry.ttl_num_positions_per_qtr
-	}));
+			positions: entry.ttl_num_positions_per_qtr,
+      		open_close: entry.open_close_ratio,
+			num_stopped_ciks: entry.num_stopped_ciks,
+			num_new_ciks: entry.num_new_ciks
+	}))
 
 	let isCardExpanded = false;
 
@@ -209,10 +213,33 @@
 
 							<Tabs.Content value="positions" class="space-y-2">								
 								<Card.Content class="min-h-[450px]">
-	
-									<Bar data={entries_qtrstats_chart} y='positions'/>								
+									<Tabs.Root>
+										<div class="flex items-center justify-center gap-2">
+				
+											<Tabs.List>
+												<Tabs.Trigger class="flex-grow text-center" value="totals">Totals</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="ratio_oc">Open/Close</Tabs.Trigger>
+											</Tabs.List>
+										</div>
+				
+										<Tabs.Content value="totals" class="space-y-2">
+											<Card.Content class="min-h-[450px]">
+													<Bar data={entries_qtrstats_chart} y='positions'/>								
+											</Card.Content>								
+										</Tabs.Content>
+										<Tabs.Content value="ratio_oc" class="space-y-2">
+											<Card.Content class="min-h-[450px]">
+													<Line data={entries_qtrstats_chart} y='open_close'
+													/>								
+											</Card.Content>								
+										</Tabs.Content>
+				
+									</Tabs.Root>
+				
+				
+				
+				
 								</Card.Content>
-								
 							</Tabs.Content>
 
 						</Tabs.Root>

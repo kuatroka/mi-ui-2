@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {scaleTime, scaleBand } from 'd3-scale';
+    import {scaleTime } from 'd3-scale';
 
     import { format } from 'date-fns';
     import { PeriodType, formatDate, format as formatMetric } from 'svelte-ux';
@@ -37,7 +37,7 @@
       <Axis placement="bottom" ticks={6}
       rule
       />
-<Spline defined={(data) => data[y] != null} class="stroke-2 stroke-chart"/>
+<Spline class="stroke-2 stroke-chart"/>
 <Highlight points lines />
     </Svg>
     <Tooltip header={(data) => format(data[x], 'y QQQ')} let:data>

@@ -2,7 +2,7 @@ import { SQLITE_FULL_PATH } from '$env/static/private';
 import Database from 'better-sqlite3';
 import type { Totals, Cik, QtrStats } from './types';
 
-const db = new Database(SQLITE_FULL_PATH, { verbose: console.log }); // remove in prod
+const db = new Database(SQLITE_FULL_PATH, { verbose: console.log, readonly: true }); // remove in prod
 
 // ### Totals
 export function getTotals(): Totals[] {
@@ -36,6 +36,8 @@ export const getQtrStats = (): QtrStats[] => {
 	open_close_ratio,
 	mean_curr_twrr_all_ciks_per_qtr_cons,
 	mean_curr_twrr_all_ciks_per_qtr_yahoo,
+	num_stopped_ciks,
+	num_new_ciks,
 	is_quarter_completed
 	FROM every_qtr_twrr
 	ORDER BY quarter

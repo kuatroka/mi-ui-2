@@ -6,6 +6,8 @@ export type QtrStats = {
 	ttl_num_assets_all_ciks_per_qtr: number;
 	ttl_num_positions_per_qtr: number;
 	open_close_ratio: number;
+	num_stopped_ciks: number;
+	num_new_ciks: number;
 	mean_curr_twrr_all_ciks_per_qtr_cons: number;
 	mean_curr_twrr_all_ciks_per_qtr_yahoo: number;
 	is_quarter_completed: string;
