@@ -4,6 +4,7 @@
     import { Maximize } from "lucide-svelte";
 
     import { ToggleGroup as ToggleGroupUX, ToggleOption, TogglePanel } from 'svelte-ux';
+    import {Rule} from 'layerchart'
     import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/genData';
     import { pivotLonger } from '../../../node_modules/layerchart/dist/utils/pivot';
     import { flatGroup } from 'd3-array';
@@ -55,7 +56,7 @@
             closed_ciks: entry.num_stopped_ciks ?? 0,
             new_ciks: entry.num_new_ciks ?? 0
         }));
-        }
+        };
 
     let series_columns = ['closed_ciks', 'new_ciks'];
     let metric_column = 'value'
@@ -186,10 +187,36 @@ data={entries_qtrstats_chart}
             
             <Tabs.Content value="superinvestors" class="space-y-2">								
                 <Card.Content class="min-h-[450px]">
-                    
-                    <Bar data={entries_qtrstats_chart} y='ciks'/>								
+                    <Tabs.Root>
+                        <div class="flex items-center justify-center gap-2">
+
+                            <Tabs.List>
+                                <Tabs.Trigger class="flex-grow text-center" value="totals">Total</Tabs.Trigger>
+                                <Tabs.Trigger class="flex-grow text-center" value="new_closed">New/Closed</Tabs.Trigger>
+                            </Tabs.List>
+                        </div>
+
+                        <Tabs.Content value="totals" class="space-y-2">
+                            <Card.Content class="min-h-[450px]">
+                                <Bar data={entries_qtrstats_chart} y='ciks'/>								
+                            </Card.Content>								
+                        </Tabs.Content>
+
+                        <Tabs.Content value="new_closed" class="space-y-2">
+                            <Card.Content class="min-h-[450px]">
+                                    <!-- <Line data={entries_qtrstats_chart} y='open_close'	/>	 -->
+                                    <MultiLine
+                                        {categoryColours}
+                                        {multiSeriesFlatData}
+                                        {dataByCategory}
+                                        />							
+                            </Card.Content>								
+                        </Tabs.Content>
+
+                    </Tabs.Root>					
                 </Card.Content>
             </Tabs.Content>
+
             <Tabs.Content value="assets" class="space-y-2">	
                 <Card.Content class="min-h-[450px]">
 
@@ -263,7 +290,13 @@ Toggle value: {selectedStr}
 
 <h1 class="text-2xl text-amber-500 ml-4 my-4"> Line Chat from layerchart - Real Data</h1>
 
-<Line data={entries_qtrstats_chart} y="open_close"/>
+<Line data={entries_qtrstats_chart} 
+y="open_close"
+<Rule
+        y={1}
+        class="stroke-2 stroke-red-400 [stroke-dasharray:4] [stroke-linecap:round] "
+      />
+      />
 
 <!-- <h1 class="text-2xl text-amber-500 ml-4  my-4"> MultiLine Chat from layerchart - Synthetic Data</h1>
 <MultiLine
@@ -286,7 +319,11 @@ Toggle value: {selectedStr}
 {categoryColours}
 {multiSeriesFlatData}
 {dataByCategory}
+{series_columns}
 />
+
+
+<!-- <MultiLine /> -->
 
 
 

@@ -38,7 +38,8 @@ export const getQtrStats = (): QtrStats[] => {
 	mean_curr_twrr_all_ciks_per_qtr_yahoo,
 	num_stopped_ciks,
 	num_new_ciks,
-	is_quarter_completed
+	is_quarter_completed,
+	ratio_new_stopped_cusips
 	FROM every_qtr_twrr
 	ORDER BY quarter
 	`;

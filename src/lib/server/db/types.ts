@@ -11,6 +11,7 @@ export type QtrStats = {
 	mean_curr_twrr_all_ciks_per_qtr_cons: number;
 	mean_curr_twrr_all_ciks_per_qtr_yahoo: number;
 	is_quarter_completed: string;
+	ratio_new_stopped_cusips: string;
 };
 
 export type Totals = {

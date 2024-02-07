@@ -10,11 +10,14 @@
 	import { Button } from "$lib/components/ui/button";
 	
 	import {format} from 'svelte-ux';
+	import { pivotLonger } from '../../../node_modules/layerchart/dist/utils/pivot';
+    import { flatGroup } from 'd3-array';
 
 	import {Overview, RecentSales	} from "$lib/components/dashboard";
 	import AreaClipped from "$lib/components/layerchart/area-simple/area-clipped-tooltip.svelte";
 	import Bar from '$lib/components/layerchart/bar/bar.svelte'
 	import Line from "$lib/components/layerchart/line/line.svelte"
+	import MultiLine from "$lib/components/layerchart/line/line-multiseries.svelte"
 
 	import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
 	export let data;
@@ -35,24 +38,66 @@
         entries_qtrstats = original_qtrstats.filter(entry => entry.is_quarter_completed == 'YES');
     }
 	
-	$: entries_qtrstats_chart = entries_qtrstats.map(entry => ({
-			date: new Date(entry.quarter_end_date),
-			value: entry.ttl_value_all_ciks_per_qtr,
-			assets: entry.ttl_num_assets_all_ciks_per_qtr,
+
+	let entries_qtrstats_chart: any[]= []; 
+    let entries_ciks: any[]= []; 
+    let entries_positions: any[]= []; 
+    let entries_cusips: any[]= []; 
+	$: {
+        entries_qtrstats_chart = entries_qtrstats.map(entry => ({
+            date: new Date(entry.quarter_end_date),
+            value: entry.ttl_value_all_ciks_per_qtr,
+        }));
+
+        entries_ciks = entries_qtrstats.map(entry => ({
+            date: new Date(entry.quarter_end_date),
+            closed_ciks: entry.num_stopped_ciks ?? 0,
+            new_ciks: entry.num_new_ciks ?? 0,
 			ciks: entry.ttl_num_ciks_per_qtr,
-			positions: entry.ttl_num_positions_per_qtr,
-      		open_close: entry.open_close_ratio,
-			num_stopped_ciks: entry.num_stopped_ciks,
-			num_new_ciks: entry.num_new_ciks
-	}))
+        }));
+
+        entries_positions = entries_qtrstats.map(entry => ({
+            date: new Date(entry.quarter_end_date),
+            positions: entry.ttl_num_positions_per_qtr,
+            open_close: entry.open_close_ratio,
+        }));
+
+        entries_cusips = entries_qtrstats.map(entry => ({
+            date: new Date(entry.quarter_end_date),
+            ratio_new_stopped_cusips: entry.ratio_new_stopped_cusips,
+			assets: entry.ttl_num_assets_all_ciks_per_qtr
+        }));
+
+	};
+
+	$: cusip_ratio_max = Math.max(...entries_cusips.map(item => item.ratio_new_stopped_cusips));
+	$: cusip_ratio_min = -cusip_ratio_max;
+	let showRule = true;
+  	let ruleClass = 'stroke-2 stroke-rose-400 [stroke-dasharray:4] [stroke-linecap:round]';
+
+
+	let series_columns = ['closed_ciks', 'new_ciks'];
+    let metric_column = 'value'
+    let category = 'type';
+    let series_colours = ['var(--color-rose-400)', 'var(--color-emerald-500'];
+
+    let categoryColours: Record<string, string> = {};
+    series_columns.forEach((column, index) => {
+						categoryColours[column] = series_colours[index];
+						});
+
+
+    let multiSeriesFlatData: any[]= [];
+    let dataByCategory: any[]= [];
+    $: { multiSeriesFlatData = pivotLonger(entries_ciks, series_columns, category, metric_column);
+        dataByCategory = flatGroup(multiSeriesFlatData, (d) => d[category]);
+    }
 
 	let isCardExpanded = false;
 
     function toggleCardSize() {
         isCardExpanded = !isCardExpanded;
     }
-
-
 
 	
 
@@ -195,52 +240,107 @@
 									<Maximize />
 									</Button>							 -->
 								</Card.Content>
-							</Tabs.Content>
-							
+							</Tabs.Content>	
 							
 							<Tabs.Content value="superinvestors" class="space-y-2">								
-								<Card.Content class="min-h-[450px]">
-									
-									<Bar data={entries_qtrstats_chart} y='ciks'/>								
-								</Card.Content>
-							</Tabs.Content>
-							<Tabs.Content value="assets" class="space-y-2">	
-								<Card.Content class="min-h-[450px]">
-	
-									<Bar data={entries_qtrstats_chart} y='assets'/>								
-								</Card.Content>
-							</Tabs.Content>
-
-							<Tabs.Content value="positions" class="space-y-2">								
 								<Card.Content class="min-h-[450px]">
 									<Tabs.Root>
 										<div class="flex items-center justify-center gap-2">
 				
 											<Tabs.List>
-												<Tabs.Trigger class="flex-grow text-center" value="totals">Totals</Tabs.Trigger>
-												<Tabs.Trigger class="flex-grow text-center" value="ratio_oc">Open/Close</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="totals">Total</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="new_closed">New/Closed</Tabs.Trigger>
 											</Tabs.List>
 										</div>
 				
 										<Tabs.Content value="totals" class="space-y-2">
 											<Card.Content class="min-h-[450px]">
-													<Bar data={entries_qtrstats_chart} y='positions'/>								
+												<Bar data={entries_ciks} y='ciks'/>								
 											</Card.Content>								
 										</Tabs.Content>
-										<Tabs.Content value="ratio_oc" class="space-y-2">
+
+										<Tabs.Content value="new_closed" class="space-y-2">
 											<Card.Content class="min-h-[450px]">
-													<Line data={entries_qtrstats_chart} y='open_close'
-													/>								
+													<!-- <Line data={entries_qtrstats_chart} y='open_close'	/>	 -->
+													<MultiLine
+														{categoryColours}
+														{multiSeriesFlatData}
+														{dataByCategory}
+														{series_columns}
+														/>							
 											</Card.Content>								
 										</Tabs.Content>
 				
-									</Tabs.Root>
-				
-				
-				
-				
+									</Tabs.Root>					
 								</Card.Content>
 							</Tabs.Content>
+
+
+							<Tabs.Content value="assets" class="space-y-2">								
+								<Card.Content class="min-h-[450px]">
+									<Tabs.Root>
+										<div class="flex items-center justify-center gap-2">
+				
+											<Tabs.List>
+												<Tabs.Trigger class="flex-grow text-center" value="totals">Total</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="new_closed">New/Closed</Tabs.Trigger>
+											</Tabs.List>
+										</div>
+				
+										<Tabs.Content value="totals" class="space-y-2">
+											<Card.Content class="min-h-[450px]">
+												<AreaClipped  data={entries_cusips} y='assets'/>								
+											</Card.Content>								
+										</Tabs.Content>
+
+										<Tabs.Content value="new_closed" class="space-y-2">
+											<Card.Content class="min-h-[450px]">
+												<Line 
+												data={entries_cusips} 
+												y='ratio_new_stopped_cusips'
+												minValue={cusip_ratio_min}
+												maxValue={cusip_ratio_max}
+												{showRule}
+												{ruleClass}
+												/>							
+											</Card.Content>								
+										</Tabs.Content>
+				
+									</Tabs.Root>					
+								</Card.Content>
+							</Tabs.Content>
+							
+
+							<Tabs.Content value="positions" class="space-y-2">								
+								<Card.Content class="min-h-[450px]">
+									<Tabs.Root>
+										
+										<div class="flex items-center justify-center gap-2">
+				
+											<Tabs.List>
+												<Tabs.Trigger class="flex-grow text-center" value="total">Total</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="ratio_oc">Opened/Closed</Tabs.Trigger>
+											</Tabs.List>
+										</div>
+										<Tabs.Content value="total" class="space-y-2">
+											<Card.Content class="min-h-[450px]">
+													<!-- <Bar data={entries_qtrstats_chart} y='positions'/>	 -->
+													<AreaClipped  data={entries_positions} y='positions'/>							
+											</Card.Content>								
+										</Tabs.Content>
+										
+										<Tabs.Content value="ratio_oc" class="space-y-2">
+											<Card.Content class="min-h-[450px]">
+													<Line data={entries_positions} y='open_close'	/>								
+											</Card.Content>								
+										</Tabs.Content>
+				
+									</Tabs.Root>					
+								</Card.Content>
+							</Tabs.Content>
+
+
+
 
 						</Tabs.Root>
 					</Card.Root>

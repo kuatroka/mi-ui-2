@@ -18,10 +18,10 @@
       keys: ['apples', 'bananas', 'num_new_ciks', 'num_stopped_ciks'],
     });
     
-    export let series_columns = ['num_stopped_ciks', 'num_new_ciks'];
+    export let series_columns = ['num_stopped_ciks', 'num_new_ciks', 'bananas'];
     export let category = 'type';
     export let metric_column = 'value'
-    export let series_colours = ['var(--color-rose-400)', 'var(--color-emerald-500'];
+    export let series_colours = ['var(--color-rose-400)', 'var(--color-emerald-500', 'black'];
 
     export let categoryColours: Record<string, string> = {};
     series_columns.forEach((column, index) => {
@@ -40,7 +40,7 @@
 </script>
 <!-- <pre>{JSON.stringify(data.slice(0,4), null, 2)}</pre> -->
 
-<div class="h-[300px] p-4 border rounded">
+<div class="h-[400px] p-4 border rounded">
   <Chart
     data={multiSeriesFlatData}
     x={x}
@@ -79,9 +79,15 @@
       {/each}
       <Highlight points lines />
     </Svg>
-    <Tooltip header={(data) => format(data[x], 'y QQQ')} let:data>
+    <!-- <Tooltip header={(data) => format(data[x], 'y QQQ')} let:data>
       <TooltipItem label={data[category]} value={data[y]} />
-    </Tooltip>
+    </Tooltip> -->
+    <!-- <Tooltip header={(data) => format(data[x], 'y QQQ')} let:data> -->
+      <!-- {#each series_columns as key} -->
+        <!-- <TooltipItem label={key} value={data[y]} /> -->
+        <!-- need to sort out the tooltip to show for all categoreis not on the hovered one -->
+      <!-- {/each} -->
+    <!-- </Tooltip> -->
   </Chart>
 </div>
 
