@@ -20,8 +20,10 @@ export type Totals = {
 	ttl_years: number;
 	ttl_quarters: number;
 	ttl_positions: number;
+	incomplete_qtr: string;
 	last_full_qtr: number;
 	last_full_value: number;
+	last_load_date: string;
 };
 
 export type Charachter = {

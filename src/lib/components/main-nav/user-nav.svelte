@@ -9,7 +9,7 @@
 		<Button
 			variant="ghost"
 			builders={[builder]}
-			class="relative h-8 w-8 rounded-full"
+			class="relative h-8 w-8 rounded"
 		>
 			<Avatar.Root class="h-8 w-8">
 				<Avatar.Image src="/avatars/01.png" alt="@shadcn" />

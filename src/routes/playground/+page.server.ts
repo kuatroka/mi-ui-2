@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { getCik, getQtrStats } from '$lib/server/db/sqlite';
+import { getCik, getQtrStats, getTotals } from '$lib/server/db/sqlite';
 
 export const load = async ({ url }) => {
 	const limit = Number(url.searchParams.get('limit')) || 5;
@@ -12,6 +12,7 @@ export const load = async ({ url }) => {
 
 	return {
 		ciks: getCik(limit, q, skip, order_by, order_dir),
-		qtrStats: await getQtrStats()
+		qtrStats: await getQtrStats(),
+		totals: getTotals()
 	};
 };

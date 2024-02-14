@@ -3,7 +3,7 @@
 
     import { format } from 'date-fns';
     import { PeriodType, formatDate, format as formatMetric } from 'svelte-ux';
-    import {Chart,  Svg, Axis, Rule, Tooltip, TooltipItem, Highlight, Spline, Legend } from 'layerchart'
+    import {Chart,  Svg, Axis, Rule, Tooltip, TooltipItem, Highlight, Spline, Legend, Text } from 'layerchart'
     import { createDateSeries } from '../../../../../node_modules/layerchart/dist/utils/genData';
     export let data = createDateSeries({
     count: 100,
@@ -24,7 +24,7 @@
 </script>
 
 <div class="h-[400px] p-4 border rounded group">
-  <h2 class="mb-2">Horizontal</h2>
+
   <Chart
   
     {data}
@@ -38,8 +38,10 @@
   >
     <Svg>
       <Axis placement="left"   format={(d) => formatMetric(d, 'decimal')}/>
-      <Axis placement="bottom" ticks={6}
+      <Axis placement="bottom" ticks={6} 
       />
+      <!-- labelProps={{ class:"red" }} -->
+      <!-- <Text value={'ratio'} x={6} y={-5} text-anchor="start"/> -->
     <Spline defined={(data) => data[y] != null} class="stroke-2 stroke-chart"/>
     <Highlight points lines />
     {#if showRule}

@@ -21,7 +21,8 @@
 
 	import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
 	export let data;
-	$: entries_cik = data.ciks;
+	$: entries_totals = data.totals;
+	$: entries_for_table = data.ciks;
 
 	let original_qtrstats = data.qtrStats; // Store the original data
 
@@ -43,6 +44,8 @@
     let entries_ciks: any[]= []; 
     let entries_positions: any[]= []; 
     let entries_cusips: any[]= []; 
+
+
 	$: {
         entries_qtrstats_chart = entries_qtrstats.map(entry => ({
             date: new Date(entry.quarter_end_date),
@@ -67,9 +70,11 @@
             ratio_new_stopped_cusips: entry.ratio_new_stopped_cusips,
 			assets: entry.ttl_num_assets_all_ciks_per_qtr
         }));
-
 	};
 
+
+
+	
 	$: cusip_ratio_max = Math.max(...entries_cusips.map(item => item.ratio_new_stopped_cusips));
 	$: cusip_ratio_min = -cusip_ratio_max;
 	let showRule = true;
@@ -97,9 +102,34 @@
 
     function toggleCardSize() {
         isCardExpanded = !isCardExpanded;
-    }
+    };
 
-	
+	let tabTitles: Record<string, string> = {
+    'total': 'Number of All Positions',
+    'ratio_oc_positions': 'Ratio of Opened vs Closed Positions',
+};
+
+	let activeTab = 'total';
+	function handleTabClick(event: CustomEvent<string>) {
+		activeTab = event.detail;
+	};
+
+	// Get the current date
+let currentDate = new Date();
+
+// Calculate the end of the previous calendar quarter
+let quarter = Math.floor((currentDate.getMonth() / 3));
+let lastQuarterEnd = new Date(currentDate.getFullYear(), quarter * 3, 0);
+
+// Add 45 days to the end of the previous quarter
+let lastReportingDate = new Date(lastQuarterEnd);
+lastReportingDate.setDate(lastReportingDate.getDate() + 45);
+
+// Calculate the difference in days between current date and last reporting date
+let timeDifference = lastReportingDate.getDate() - currentDate.getDate();
+// let daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+console.log(lastReportingDate, currentDate, timeDifference);
 
 
 </script>
@@ -123,91 +153,236 @@
 <div class="hidden flex-col md:flex">
 	<div class="flex-1 space-y-2 p-2">
 		<div class="flex items-center justify-between space-y-2">
-			<h2 class="text-3xl font-bold tracking-tight">All Superinvestors</h2>
+			<!-- <h2 class="text-3xl font-bold tracking-tight">All Superinvestors</h2> -->
 
 			
 			<div class="flex flex-col items-center space-y-2">
-				<Toggle
-				bind:pressed={showIncomple}
-				aria-label="toggle completed quarters"
-				>
-				<!-- onPressedChange={handleCheckedChange} -->
-				Show Incomplete Qtr
-				</Toggle>
 
-				<div class="flex items-center gap-2">
-					<Switch 
-					id="add-partial-qtr"
-					class="ml-auto"
-					bind:checked={showIncomple}
-					>
-					<!-- onCheckedChange={handleCheckedChange} -->
-				</Switch>
-				<Label for="add-partial-qtr">Show partial Qtr</Label>
-			</div>
+				<!-- <Card.Root class="">
+
+					<Card.Content class="mt-2">
+						<ul class="timeline timeline-vertical [--timeline-col-start:7rem]">
+							<li>
+								<div class="timeline-start">{new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</div>
+								<div class="timeline-middle">
+									<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+									fill="currentColor" 
+									class="w-5 h-5"><path 
+									fill-rule="evenodd" 
+									d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+								</div>
+								<div class="timeline-end timeline-box bg-background">Last Data Load</div>
+								<hr/>
+							</li>
+
+						<li>
+							{#if entries_totals.at(0)?.incomplete_qtr}
+								<hr/>
+								<div class="timeline-start">{entries_totals.at(0)?.incomplete_qtr}</div>
+								<div class="timeline-middle">
+									<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+									fill="currentColor" 
+									class="w-5 h-5"><path 
+									fill-rule="evenodd" 
+									d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+								</div>
+								<div class="timeline-end timeline-box bg-background flex items-center">
+									{#if Math.abs(timeDifference) === 0}
+										In Progress - Last day
+									{:else}
+										In Progress ({Math.abs(timeDifference)} days left)
+									{/if}
+										
+										<Switch 
+										id="add-partial-qtr"
+										class="ml-auto mx-1"
+										bind:checked={showIncomple}
+										>
+										</Switch>
+											
+								</div>
+
+								<hr/>									
+							{/if}
+
+						</li>
+						<li>
+							<hr/>
+							<div class="timeline-start">{entries_totals.at(0)?.last_full_qtr}</div>
+							<div class="timeline-middle">
+								<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+								fill="currentColor" 
+								class="w-5 h-5"><path 
+								fill-rule="evenodd" 
+								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+							</div>
+							<div class="timeline-end timeline-box bg-background">Last Full Quarter</div>
+						</li>
+						</ul>
+					</Card.Content>
+				</Card.Root> -->
 		</div>
 		</div>
 
 		<Tabs.Root value="overview" class="space-y-2">
-			<div class="flex items-center gap-2">
-				<Tabs.List>
-					<Tabs.Trigger value="overview">Overview</Tabs.Trigger>
-					<Tabs.Trigger value="analytics">Analytics</Tabs.Trigger>
-					<Tabs.Trigger value="reports" disabled>Reports</Tabs.Trigger>
-					<Tabs.Trigger value="notifications" disabled>Notifications</Tabs.Trigger>
+			<div class="flex items-center gap-2 text-md font-medium">
+				<Tabs.List >
+					<Tabs.Trigger value="overview" class="text-lg font-bold">Overview</Tabs.Trigger>
+					<Tabs.Trigger value="analytics" class="text-lg font-bold">Analytics</Tabs.Trigger>
+					<Tabs.Trigger value="reports" disabled class="text-lg font-bold">Reports</Tabs.Trigger>
+					<Tabs.Trigger value="notifications" disabled class="text-lg font-bold">Notifications</Tabs.Trigger>
 				</Tabs.List>
 
 
 			</div>
 			<Tabs.Content value="overview" class="space-y-2">
-				<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-4">
-					<Card.Root>
+				<div class="grid gap-2 md:grid-cols-2 lg:grid-rows-1 grid-flow-col">
+					<Card.Root class="h-32">
 						<Card.Header
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Value</Card.Title>
-							<DollarSign class="h-8 w-8 text-muted-foreground" />
+							<DollarSign class="h-4 w-4 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">${format(data.totals[0].last_full_value, "metric")}</div>
 							<p class="text-xs text-muted-foreground">Last complete quarter: {data.totals[0].last_full_qtr}</p>
 						</Card.Content>
 					</Card.Root>
-					<Card.Root>
+
+					<Card.Root class="h-32">
 						<Card.Header
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Superinvestors</Card.Title>
-							<Landmark class="h-8 w-8 text-muted-foreground" />
+							<Landmark class="h-4 w-4 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">{format(data.totals[0].ttl_ciks, "integer")}</div>
 						</Card.Content>
 					</Card.Root>
-					<Card.Root>
+
+					<Card.Root class="h-32">
 						<Card.Header
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Years</Card.Title>
-							<CalendarDays class="h-8 w-8 text-muted-foreground" />
+							<CalendarDays class="h-4 w-4 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">{data.totals[0].ttl_years}</div>
 							<p class="text-xs text-muted-foreground">{data.totals[0].ttl_quarters} filed quarters from 1999</p>
 						</Card.Content>
 					</Card.Root>
-					<Card.Root>
+
+					<Card.Root class="h-32">
 						<Card.Header
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Assets</Card.Title>
-							<CandlestickChart class="h-8 w-8 text-muted-foreground" />
+							<CandlestickChart class="h-4 w-4 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">{format(data.totals[0].ttl_assets, "integer")}</div>
 							<p class="text-xs text-muted-foreground">Held in {format(data.totals[0].ttl_positions, "integer")} Positions</p>
 						</Card.Content>
 					</Card.Root>
+
+					<Card.Root class="h-32">
+						<Card.Header
+							class="flex flex-row items-center justify-between space-y-0 pb-2"
+						>
+							<Card.Title class="text-sm font-medium">Cumulative RR</Card.Title>
+							<DollarSign class="h-4 w-4 text-muted-foreground" />
+						</Card.Header>
+						<Card.Content>
+							<div class="text-2xl font-bold">${format(data.totals[0].last_full_value, "metric")}</div>
+							<p class="text-xs text-muted-foreground">Last complete quarter: {data.totals[0].last_full_qtr}</p>
+						</Card.Content>
+					</Card.Root>
+
+					<Card.Root class="h-32">
+						<Card.Header
+							class="flex flex-row items-center justify-between space-y-0 pb-2"
+						>
+							<Card.Title class="text-sm font-medium">Current RR</Card.Title>
+							<DollarSign class="h-4 w-4 text-muted-foreground" />
+						</Card.Header>
+						<Card.Content>
+							<div class="text-2xl font-bold">${format(data.totals[0].last_full_value, "metric")}</div>
+							<p class="text-xs text-muted-foreground">Last complete quarter: {data.totals[0].last_full_qtr}</p>
+						</Card.Content>
+					</Card.Root>
+
+					<Card.Root class="h-32 ">
+
+						<Card.Content class="mt-1">
+							<div class="flex items-center">
+							<ul class="timeline timeline-vertical [--timeline-col-start:rem]">
+								<ul class="timeline timeline-vertical [--timeline-col-start:7rem]">
+									<li>
+										<div class="timeline-start tracking-tight text-sm font-medium">{new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</div>
+										<div class="timeline-middle">
+											<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+											fill="currentColor" 
+											class="w-5 h-5"><path 
+											fill-rule="evenodd" 
+											d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+										</div>
+										<div class="timeline-end timeline-box bg-background tracking-tight text-sm font-medium" style="padding: 6px;">Last Data Load</div>
+										<hr/>
+									</li>
+						
+	
+							<li>
+								{#if entries_totals.at(0)?.incomplete_qtr}
+									<hr/>
+									<div class="timeline-start tracking-tight text-sm font-medium">{entries_totals.at(0)?.incomplete_qtr}</div>
+									<div class="timeline-middle">
+										<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+										fill="currentColor" 
+										class="w-5 h-5"><path 
+										fill-rule="evenodd" 
+										d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+									</div>
+									<div class="timeline-end timeline-box bg-background flex items-center tracking-tight text-sm font-medium" style="padding: 6px;">
+										{#if Math.abs(timeDifference) === 0}
+											In Progress - Last day
+										{:else}
+											In Progress ({Math.abs(timeDifference)} days left)
+										{/if}
+											
+											<Switch 
+											id="add-partial-qtr"
+											class="ml-auto mx-1"
+											bind:checked={showIncomple}
+											>
+											</Switch>
+												
+									</div>
+	
+									<hr/>									
+								{/if}
+	
+							</li>
+							<li>
+								<hr/>
+								<div class="timeline-start tracking-tight text-sm font-medium">{entries_totals.at(0)?.last_full_qtr}</div>
+								<div class="timeline-middle">
+									<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+									fill="currentColor" 
+									class="w-5 h-5"><path 
+									fill-rule="evenodd" 
+									d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+								</div>
+								<div class="timeline-end timeline-box bg-background tracking-tight text-sm font-medium" style="padding: 6px;">Last Full Quarter</div>
+							</li>
+							</ul>						
+
+							</div>
+						</Card.Content>
+					</Card.Root>
+
 				</div>
 				<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-7">
 					<Card.Root class={isCardExpanded ? 'col-span-7' : 'col-span-4'}>
@@ -225,7 +400,7 @@
 									<Card.Title>Overview</Card.Title>
 								</Card.Header> -->
 								<Card.Content class="min-h-[450px]">
-										<DataTable data={entries_cik}/>
+										<DataTable data={entries_for_table}/>
 									<!-- <AreaSimple /> -->
 								</Card.Content>								
 							</Tabs.Content>
@@ -313,23 +488,23 @@
 
 							<Tabs.Content value="positions" class="space-y-2">								
 								<Card.Content class="min-h-[450px]">
-									<Tabs.Root>
+									<Tabs.Root bind:value={activeTab}>
 										
-										<div class="flex items-center justify-center gap-2">
-				
+										<div class="flex items-center justify-between gap-2">
+											<h3 class="font-semibold leading-none tracking-tight">{tabTitles[activeTab]}</h3>
 											<Tabs.List>
 												<Tabs.Trigger class="flex-grow text-center" value="total">Total</Tabs.Trigger>
-												<Tabs.Trigger class="flex-grow text-center" value="ratio_oc">Opened/Closed</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="ratio_oc_positions">Ratio</Tabs.Trigger>
 											</Tabs.List>
 										</div>
-										<Tabs.Content value="total" class="space-y-2">
+										<Tabs.Content value="total" class="space-y-2 ">
 											<Card.Content class="min-h-[450px]">
 													<!-- <Bar data={entries_qtrstats_chart} y='positions'/>	 -->
 													<AreaClipped  data={entries_positions} y='positions'/>							
 											</Card.Content>								
 										</Tabs.Content>
 										
-										<Tabs.Content value="ratio_oc" class="space-y-2">
+										<Tabs.Content value="ratio_oc_positions" class="space-y-2">
 											<Card.Content class="min-h-[450px]">
 													<Line data={entries_positions} y='open_close'	/>								
 											</Card.Content>								
@@ -352,6 +527,8 @@
 						<Card.Content>
 							<RecentSales />
 						</Card.Content>
+
+
 					</Card.Root>
 				</div>
 				<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-7">

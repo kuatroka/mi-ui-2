@@ -6,6 +6,6 @@
 	<Input
 		type="search"
 		placeholder="Search..."
-		class="h-9 md:w-[100px] lg:w-[300px]"
+		class="h-8 md:w-[100px] lg:w-[300px]"
 	/>
 </div>

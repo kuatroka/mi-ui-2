@@ -12,8 +12,10 @@ export function getTotals(): Totals[] {
 	ttl_years,
 	ttl_quarters,
 	ttl_tr AS ttl_positions,
+	incomplete_qtr,
 	last_full_qtr,
-	last_full_value
+	last_full_value,
+	last_load_date
 	FROM totals
 `;
 	const stmnt = db.prepare(sql);

@@ -1,11 +1,25 @@
 <script lang="ts">
+
+    import * as d3 from 'd3';
+    import { Chart, type EChartsOptions } from '$lib/components/echarts'
+
     import { page } from '$app/stores'
     import type { ComponentProps } from 'svelte';
     import { Maximize } from "lucide-svelte";
+    import { Timeline, TimelineItem, Button as ButtonFlowbite } from 'flowbite-svelte';
+    import { ArrowRightOutline } from 'flowbite-svelte-icons';
 
     import { ToggleGroup as ToggleGroupUX, ToggleOption, TogglePanel } from 'svelte-ux';
     import {Rule} from 'layerchart'
     import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/genData';
+    let data2 = createDateSeries({
+    count: 100,
+    min: 0.80,
+    max: 1.5,
+    value: 'number',
+    keys: ['assets', 'baseline'],
+  });
+
     import { pivotLonger } from '../../../node_modules/layerchart/dist/utils/pivot';
     import { flatGroup } from 'd3-array';
     
@@ -27,8 +41,16 @@
 
     import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
 
+    import MyPlot from '$lib/components/observableplot/Plot.svelte'
+    import * as Plot from "@observablehq/plot";
+// 
+    import ObservablePlot from '$lib/components/observableplot/observablePlot.svelte';
+
+
 	export let data;
 	let entries_cik = data.ciks;
+    let entries_totals = data.totals;
+    $: {console.log(entries_totals[0].last_load_date);}
     let entries_qtrstats = data.qtrStats; // originally it was declared with `$:`
 
     let original_qtrstats = data.qtrStats; // Store the original data
@@ -58,6 +80,8 @@
         }));
         };
 
+        // $: console.log(entries_ciks_new_closed)
+
     let series_columns = ['closed_ciks', 'new_ciks'];
     let metric_column = 'value'
     let category = 'type';
@@ -68,28 +92,13 @@
       categoryColours[column] = series_colours[index];
     });
 
-    // $: {
-    //     console.log(multiSeriesFlatData.slice(0, 4));
-    //     //  console.log(entries_qtrstats.length)
-    // }
 
     let multiSeriesFlatData: any[]= [];
     let dataByCategory: any[]= [];
     $: { multiSeriesFlatData = pivotLonger(entries_ciks_new_closed, series_columns, category, metric_column);
         dataByCategory = flatGroup(multiSeriesFlatData, (d) => d[category]);
-    }
+    };
 
-
-
-
-
-    let data2 = createDateSeries({
-    count: 100,
-    min: 0.80,
-    max: 1.5,
-    value: 'number',
-    keys: ['assets', 'baseline'],
-  });
 
     let isCardExpanded = false;
 
@@ -107,8 +116,131 @@
 
     let selectedStr = 'a';
 
+    // Plot options for the type 1 of declaring Observable Plot
+    let plotOptions: any;
+    $: {plotOptions = {
+        marks: [
+            Plot.lineY(entries_ciks_new_closed, {x: "date", y: "closed_ciks", stroke: "var(--color-rose-400)" }),
+        ]
+        }};
+    
+    // Plot options for the type 2 of declaring Observable Plot
+    let div: HTMLElement | null;
+    let data4 = d3.ticks(-2, 2, 200).map(Math.sin);
+
+    function onMousemove(event: MouseEvent) {
+        const [x, y] = d3.pointer(event);
+        data4 = data4.slice(-200).concat(Math.atan2(x, y));
+    }
+
+    $: {
+        div?.firstChild?.remove(); // remove old chart, if any
+        div?.append(Plot.lineY(data4).plot({grid: true})); // add the new chart
+    }
+
+    // options for eCharts 
+    const options: EChartsOptions = {
+        xAxis: {
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        type: 'category',
+        },
+        yAxis: {
+        type: 'value',
+        },
+        series: [
+        {
+            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            type: 'bar',
+        },
+        ],
+    };
+
+
 
 </script>
+
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">eCharts - Synthetic Data</h2>
+<div class="app">
+    <Chart options={options} />
+</div> -->
+
+
+<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Observable Plot Type 1 - Synthetic Data</h2>
+<div on:mousemove={onMousemove} bind:this={div} role="img"></div>
+
+
+<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Flowbite-svelte - Timeline</h2>
+
+<Card.Content class="mt-2">
+<Timeline>
+    <TimelineItem svgClass="pb-2"  title="Today" date={new Date().toDateString()}>
+    </TimelineItem>
+    <TimelineItem title="Application UI code in Tailwind CSS" date={new Date(entries_totals[0].last_load_date).toDateString()}>
+      <p class="text-base font-normal text-gray-500 dark:text-gray-400">All of the pages and components are first designed in Figma and we keep a parity between the two versions even as we update the project.</p>
+    </TimelineItem>
+    <TimelineItem title="Application UI code in Tailwind CSS" date="April 2022">
+      <p class="text-base font-normal text-gray-500 dark:text-gray-400">Get started with dozens of web components and interactive elements built on top of Tailwind CSS.</p>
+      <Button color="alternative">Learn more<ArrowRightOutline class="ms-2 w-3 h-3" />        
+      </Button>
+    </TimelineItem>
+  </Timeline>
+</Card.Content>
+
+<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">DaisyUI - Timeline</h2>
+<Card.Content class="mt-2">
+    <ul class="timeline timeline-vertical [--timeline-col-start:2rem]">
+    <li>
+        <div class="timeline-start">1984</div>
+        <div class="timeline-middle">
+            <svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+            fill="currentColor" 
+            class="w-5 h-5"><path 
+            fill-rule="evenodd" 
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+        </div>
+        <div class="timeline-end timeline-box bg-background">First Macintosh computer</div>
+        <hr/>
+    </li>
+    <li>
+        <hr/>
+        <div class="timeline-start">1998</div>
+        <div class="timeline-middle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+        </div>
+        <div class="timeline-end timeline-box bg-background">iMac</div>
+        <hr/>
+    </li>
+    <li>
+        <hr/>
+        <div class="timeline-start">2001</div>
+        <div class="timeline-middle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+        </div>
+        <div class="timeline-end timeline-box bg-background">iPod</div>
+        <hr/>
+    </li>
+    <li>
+        <hr/>
+        <div class="timeline-start">2007</div>
+        <div class="timeline-middle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+        </div>
+        <div class="timeline-end timeline-box bg-background">iPhone</div>
+        <hr/>
+    </li>
+    <li>
+        <hr/>
+        <div class="timeline-start">2015</div>
+        <div class="timeline-middle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+        </div>
+        <div class="timeline-end timeline-box bg-background">Apple Watch</div>
+    </li>
+    </ul>
+</Card.Content>
+
+
+
 <!-- {#each entries_qtrstats_chart.slice(0,4) as entry }
 <p>{entry.date} - {entry.open_close}</p>
     
@@ -137,15 +269,14 @@
 </div>
 
 <div class="my-4">
-<Bar 
+<!-- <Bar 
 data={entries_qtrstats_chart}
-/>
+/> -->
 
 </div>
-<div>
-
+<!-- <div>
     <AreaSimple />
-</div>
+</div> -->
 
 
 
@@ -198,13 +329,13 @@ data={entries_qtrstats_chart}
 
                         <Tabs.Content value="totals" class="space-y-2">
                             <Card.Content class="min-h-[450px]">
-                                <Bar data={entries_qtrstats_chart} y='ciks'/>								
+                                <Bar data={entries_qtrstats_chart} y='ciks'/>		
                             </Card.Content>								
                         </Tabs.Content>
 
                         <Tabs.Content value="new_closed" class="space-y-2">
                             <Card.Content class="min-h-[450px]">
-                                    <!-- <Line data={entries_qtrstats_chart} y='open_close'	/>	 -->
+                                    <Line data={entries_qtrstats_chart} y='open_close'	/>	
                                     <MultiLine
                                         {categoryColours}
                                         {multiSeriesFlatData}
@@ -290,18 +421,15 @@ Toggle value: {selectedStr}
 
 <h1 class="text-2xl text-amber-500 ml-4 my-4"> Line Chat from layerchart - Real Data</h1>
 
-<Line data={entries_qtrstats_chart} 
+<!-- <Line data={entries_qtrstats_chart} 
 y="open_close"
-<Rule
-        y={1}
-        class="stroke-2 stroke-red-400 [stroke-dasharray:4] [stroke-linecap:round] "
-      />
-      />
+showRule={true} /> -->
 
 <!-- <h1 class="text-2xl text-amber-500 ml-4  my-4"> MultiLine Chat from layerchart - Synthetic Data</h1>
 <MultiLine
 /> -->
-<h1 class="text-2xl text-amber-500 ml-4  my-4"> MultiLine Chat from layerchart - Real Data</h1>
+
+<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">MultiLine Chat from layerchart - Real Data</h2>
 
 <div class="flex items-center gap-2">
     <Switch 
@@ -315,15 +443,81 @@ y="open_close"
 </div>
 
 
-<MultiLine
+<!-- <MultiLine
 {categoryColours}
 {multiSeriesFlatData}
 {dataByCategory}
 {series_columns}
-/>
+/> -->
+
+<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Observable Plot  Type 1 - Real Data</h2>
+<MyPlot options={plotOptions} />
 
 
-<!-- <MultiLine /> -->
+<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Observable Plot Type 2 - Synthetic Data </h2>
+<ObservablePlot 
+	options={{
+		title: 'A simple bar chart',
+		marks: [Plot.barY([1,2,4,8])],
+	}}
+    fixedWidth={true}
+    width={200} 
+    />
+
+<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Observable Plot Type 2 - Real Data </h2>
+<ObservablePlot 
+	options={{
+        title: 'Assets and Investors',
+        subtitle: 'This is a subtitle',
+        marginLeft: 46,
+		marks: [Plot.lineY(entries_qtrstats_chart, {x: "date", y: "assets", stroke: "teal", tip: "x"}),
+        Plot.lineY(entries_qtrstats_chart, {x: "date", y: "ciks", stroke: "blue", tip: "x"})
+    ]        
+	}} 
+    fixedWidth={true}
+    width={400} 
+    class="px-4"
+    />
+    <!-- class="px-4 stroke-2 stroke-amber-500 text-red-400" -->
+    <!-- stroke in class- regulates the color of the axis Y numbers -->
+
+<div class="mx-4">
+    <ObservablePlot 
+	options={{
+        title: 'A more complex bar chart',
+		subtitle: 'Using date ticks. Try setting interval to "quarter".',
+		x: { interval: 'year' },
+		marks: [
+            Plot.barY([
+                {date: Date.UTC(2018,0,1), value:1},
+				{date: Date.UTC(2019,0,1), value:2},
+				{date: Date.UTC(2020,0,1), value:4},
+				{date: Date.UTC(2021,0,1), value:8}
+			], { x: 'date', y: 'value', fill: '#999' }), 
+			Plot.barY([
+                {date: Date.UTC(2018,0,1), value:2},
+				{date: Date.UTC(2019,0,1), value:1.5},
+				{date: Date.UTC(2020,0,1), value:6},
+				{date: Date.UTC(2021,0,1), value:7}
+			], { 
+                x: 'date',
+				y: 'value',
+				fill: 'red',
+				insetLeft:20,
+				insetRight: 20,
+				mixBlendMode: 'multiply'
+			})]
+        }}
+            fixedWidth={true}
+            width={200}  />
+        </div>
 
 
 
+
+<style>
+.app {
+    width: 100vw;
+    height: 100vh;
+}
+</style>

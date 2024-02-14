@@ -8,7 +8,7 @@
 
 
 </script>
-{#each data.entries as entry }
+<!-- {#each data.entries as entry }
     <p>{entry.cik} - {entry.quarter}</p>
     
-{/each}
+{/each} -->
