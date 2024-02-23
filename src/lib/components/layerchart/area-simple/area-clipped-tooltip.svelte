@@ -56,8 +56,10 @@
           lines={{ class: "stroke-chart [stroke-dasharray:unset]" }}
         />
         <Axis placement="bottom" ticks={6}
-        labelProps={{ class:"fill-primary text-sm" }}
+        labelProps={{ class:"fill-primary" }}
         />
+        <!-- labelProps={{ class:"fill-primary; stroke-secondary" }} -->
+        <!-- <Text labelProps={{ class:"stroke-primary" }} /> -->
       </Svg>
   
       <Tooltip

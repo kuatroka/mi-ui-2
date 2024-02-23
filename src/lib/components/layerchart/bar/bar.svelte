@@ -43,6 +43,7 @@
     textAnchor: "middle",
     // verticalAnchor: "middle",
     dy: 10,
+    class:"fill-primary"
   }}
 />
       <Bars

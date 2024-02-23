@@ -75,8 +75,8 @@ dependencies:
     specifier: ^8.0.2
     version: 8.0.2(svelte@4.2.8)(typescript@5.3.3)
   layerchart:
-    specifier: ^0.30.0
-    version: 0.30.0(postcss-load-config@5.0.2)(postcss@8.4.33)(svelte@4.2.8)(typescript@5.3.3)(vite@5.0.11)
+    specifier: ^0.30.1
+    version: 0.30.1(postcss-load-config@5.0.2)(postcss@8.4.33)(svelte@4.2.8)(typescript@5.3.3)(vite@5.0.11)
   lucide-svelte:
     specifier: ^0.299.0
     version: 0.299.0(svelte@4.2.8)
@@ -456,6 +456,7 @@ packages:
     dependencies:
       '@floating-ui/core': 1.6.0
       '@floating-ui/utils': 0.2.1
+    dev: true
 
   /@floating-ui/dom@1.6.3:
     resolution: {integrity: sha512-RnDthu3mzPlQ31Ss/BTwQ1zjzIhr3lk1gZB1OC56h/1vEtaXkESrOqL5fQVMfXpwGtRwX+YsZBdyHtJMQnkArw==}
@@ -934,6 +935,22 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
+  /@sveltejs/vite-plugin-svelte-inspector@2.0.0(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.8)(vite@5.0.11):
+    resolution: {integrity: sha512-gjr9ZFg1BSlIpfZ4PRewigrvYmHWbDrq2uvvPB1AmTWKuM+dI1JXQSUu2pIrYLb/QncyiIGkFDFKTwJ0XqQZZg==}
+    engines: {node: ^18.0.0 || >=20}
+    peerDependencies:
+      '@sveltejs/vite-plugin-svelte': ^3.0.0
+      svelte: ^4.0.0 || ^5.0.0-next.0
+      vite: ^5.0.0
+    dependencies:
+      '@sveltejs/vite-plugin-svelte': 3.0.2(svelte@4.2.8)(vite@5.0.11)
+      debug: 4.3.4
+      svelte: 4.2.8
+      vite: 5.0.11
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@sveltejs/vite-plugin-svelte@3.0.1(svelte@4.2.8)(vite@5.0.11):
     resolution: {integrity: sha512-CGURX6Ps+TkOovK6xV+Y2rn8JKa8ZPUHPZ/NKgCxAmgBrXReavzFl8aOSCj3kQ1xqT7yGJj53hjcV/gqwDAaWA==}
     engines: {node: ^18.0.0 || >=20}
@@ -952,6 +969,26 @@ packages:
       vitefu: 0.2.5(vite@5.0.11)
     transitivePeerDependencies:
       - supports-color
+
+  /@sveltejs/vite-plugin-svelte@3.0.2(svelte@4.2.8)(vite@5.0.11):
+    resolution: {integrity: sha512-MpmF/cju2HqUls50WyTHQBZUV3ovV/Uk8k66AN2gwHogNAG8wnW8xtZDhzNBsFJJuvmq1qnzA5kE7YfMJNFv2Q==}
+    engines: {node: ^18.0.0 || >=20}
+    peerDependencies:
+      svelte: ^4.0.0 || ^5.0.0-next.0
+      vite: ^5.0.0
+    dependencies:
+      '@sveltejs/vite-plugin-svelte-inspector': 2.0.0(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.8)(vite@5.0.11)
+      debug: 4.3.4
+      deepmerge: 4.3.1
+      kleur: 4.1.5
+      magic-string: 0.30.5
+      svelte: 4.2.8
+      svelte-hmr: 0.15.3(svelte@4.2.8)
+      vite: 5.0.11
+      vitefu: 0.2.5(vite@5.0.11)
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /@swc/helpers@0.5.3:
     resolution: {integrity: sha512-FaruWX6KdudYloq1AHD/4nU+UsMTdNE8CKyrseXWEcgjDAbvkwJg2QGPAnfIJLIWsjZOSPLOAykK6fuYp4vp4A==}
@@ -2916,6 +2953,7 @@ packages:
   /culori@3.3.0:
     resolution: {integrity: sha512-pHJg+jbuFsCjz9iclQBqyL3B2HLCBF71BwVNujUYEvCeQMvV97R59MNK3R2+jgJ3a1fcZgI9B3vYgz8lzr/BFQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dev: true
 
   /culori@4.0.1:
     resolution: {integrity: sha512-LSnjA6HuIUOlkfKVbzi2OlToZE8OjFi667JWN9qNymXVXzGDmvuP60SSgC+e92sd7B7158f7Fy3Mb6rXS5EDPw==}
@@ -5249,12 +5287,12 @@ packages:
       typescript: 5.3.3
     dev: false
 
-  /layerchart@0.30.0(postcss-load-config@5.0.2)(postcss@8.4.33)(svelte@4.2.8)(typescript@5.3.3)(vite@5.0.11):
-    resolution: {integrity: sha512-oFSpZAuOmrmAIRGIj0T/bVy/mNxxQIS/P9Hs68s7vPt96Wt9PlKtPNRNad85A4/RQ7BZuqq8eGzM1I7K7cS1/w==}
+  /layerchart@0.30.1(postcss-load-config@5.0.2)(postcss@8.4.33)(svelte@4.2.8)(typescript@5.3.3)(vite@5.0.11):
+    resolution: {integrity: sha512-4mXIs0MKeA7bBM+j+zDx96E81kFPJBvunR+VkfiUHKEdqwR9JrqiMPgsXaMG8DZtQ5DLQkNwiMUHvksUBhQlqg==}
     peerDependencies:
       svelte: ^3.56.0 || ^4.0.0
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 3.0.1(svelte@4.2.8)(vite@5.0.11)
+      '@sveltejs/vite-plugin-svelte': 3.0.2(svelte@4.2.8)(vite@5.0.11)
       d3-array: 3.2.4
       d3-color: 3.1.0
       d3-delaunay: 6.0.4
@@ -5271,13 +5309,13 @@ packages:
       d3-shape: 3.2.0
       d3-tile: 1.0.0
       d3-time: 3.1.0
-      date-fns: 3.2.0
+      date-fns: 3.3.1
       layercake: 8.0.2(svelte@4.2.8)(typescript@5.3.3)
       lodash-es: 4.17.21
-      posthog-js: 1.100.0
+      posthog-js: 1.105.9
       shapefile: 0.6.6
       svelte: 4.2.8
-      svelte-ux: 0.60.0(postcss-load-config@5.0.2)(postcss@8.4.33)(svelte@4.2.8)
+      svelte-ux: 0.60.2(postcss-load-config@5.0.2)(postcss@8.4.33)(svelte@4.2.8)
       topojson-client: 3.1.0
     transitivePeerDependencies:
       - '@babel/core'
@@ -6598,10 +6636,15 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.0.2
 
-  /posthog-js@1.100.0:
-    resolution: {integrity: sha512-r2XZEiHQ9mBK7D1G9k57I8uYZ2kZTAJ0OCX6K/OOdCWN8jKPhw3h5F9No5weilP6eVAn+hrsy7NvPV7SCX7gMg==}
+  /posthog-js@1.105.9:
+    resolution: {integrity: sha512-i9DnfyXDktugF5E9x0ejihQ8Xdh1kdVnVh7GdL7+PvFtULGMoN/b4pDmWBCwmH+ciubmqTCImVuNrZYy8+eTbw==}
     dependencies:
       fflate: 0.4.8
+      preact: 10.19.4
+    dev: false
+
+  /preact@10.19.4:
+    resolution: {integrity: sha512-dwaX5jAh0Ga8uENBX1hSOujmKWgx9RtL80KaKUFLc6jb4vCEAc3EeZ0rnQO/FO4VgjfPMfoLFWnNG8bHuZ9VLw==}
     dev: false
 
   /prebuild-install@7.1.1:
@@ -7794,40 +7837,6 @@ packages:
     dependencies:
       svelte: 4.2.8
     dev: true
-
-  /svelte-ux@0.60.0(postcss-load-config@5.0.2)(postcss@8.4.33)(svelte@4.2.8):
-    resolution: {integrity: sha512-mqNEt6N6g3aVhn72UVbo4FsHpvU142KJfrmT1WeoeRNI4pE3PI7BGtdZkcUnRRjxH8vlZINDwQ0naQ5sj7jtsw==}
-    peerDependencies:
-      svelte: ^3.56.0 || ^4.0.0
-    dependencies:
-      '@floating-ui/dom': 1.6.1
-      '@fortawesome/fontawesome-common-types': 6.5.1
-      '@mdi/js': 7.4.47
-      clsx: 2.1.0
-      culori: 3.3.0
-      d3-array: 3.2.4
-      d3-scale: 4.0.2
-      date-fns: 3.2.0
-      immer: 10.0.3
-      lodash-es: 4.17.21
-      prism-svelte: 0.5.0
-      prism-themes: 1.9.0
-      prismjs: 1.29.0
-      sveld: 0.19.1(postcss-load-config@5.0.2)(postcss@8.4.33)
-      svelte: 4.2.8
-      tailwind-merge: 2.2.1
-      zod: 3.22.4
-    transitivePeerDependencies:
-      - '@babel/core'
-      - coffeescript
-      - less
-      - postcss
-      - postcss-load-config
-      - pug
-      - sass
-      - stylus
-      - sugarss
-    dev: false
 
   /svelte-ux@0.60.2(postcss-load-config@5.0.2)(postcss@8.4.33)(svelte@4.2.8):
     resolution: {integrity: sha512-ulwa7Wqr9Gesph3A0tq0y6WEzbTF5UtT4XzKo9NSjJqVxKPB8t9kyJH/2wXSN/5eue3Bb5lndTUcO5IZZR1iXA==}

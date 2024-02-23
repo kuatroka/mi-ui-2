@@ -2,6 +2,10 @@
 	import {Activity,CreditCard,DollarSign,
 			Landmark,Users, CalendarDays, CandlestickChart,
 			Maximize2, Maximize} from "lucide-svelte";
+
+	import { ActivityLog } from "radix-icons-svelte";
+	import ObservablePlot2 from "$lib/components/observableplot/observablePlot2.svelte"
+
 	import * as Card from "$lib/components/ui/card";
 	import * as Tabs from "$lib/components/ui/tabs";
 	import { Switch } from "$lib/components/ui/switch";
@@ -20,6 +24,8 @@
 	import MultiLine from "$lib/components/layerchart/line/line-multiseries.svelte"
 
 	import DataTable from "$lib/components/datatable-sup-overview/data-table.svelte";
+	import * as Plot from "@observablehq/plot";
+
 	export let data;
 	$: entries_totals = data.totals;
 	$: entries_for_table = data.ciks;
@@ -38,6 +44,11 @@
 	} else {
         entries_qtrstats = original_qtrstats.filter(entry => entry.is_quarter_completed == 'YES');
     }
+
+	let test = entries_qtrstats.map(entry => ({
+            date: new Date(entry.quarter_end_date),
+            value: entry.ttl_value_all_ciks_per_qtr,
+        }));
 	
 
 	let entries_qtrstats_chart: any[]= []; 
@@ -131,9 +142,21 @@ let timeDifference = lastReportingDate.getDate() - currentDate.getDate();
 
 console.log(lastReportingDate, currentDate, timeDifference);
 
+let topCikValueOptions = {
+	marginLeft: 120,
+	marks: [
+    // Plot.ruleY([40, 60, 180]),
+    Plot.ruleY([0]),
+    Plot.areaY(test, {x: "date", y: "value", fillOpacity: 0.2}),
+    Plot.lineY(test, {x: "date", y: "value", 
+	tip: {fill: 'var(--color-emerald-500)', fontSize: 12}
+})
+  ]     
+    }
+
 
 </script>
-
+<pre>{JSON.stringify(entries_qtrstats_chart.slice(0, 1), null, 2)}</pre>
 <!-- showCompleted: {entries_qtrstats_chart} -->
 
 <!-- {#each entries_qtrstats_chart.reverse().slice(0, 5) as entry}
@@ -227,10 +250,10 @@ console.log(lastReportingDate, currentDate, timeDifference);
 		<Tabs.Root value="overview" class="space-y-2">
 			<div class="flex items-center gap-2 text-md font-medium">
 				<Tabs.List >
-					<Tabs.Trigger value="overview" class="text-lg font-bold">Overview</Tabs.Trigger>
-					<Tabs.Trigger value="analytics" class="text-lg font-bold">Analytics</Tabs.Trigger>
-					<Tabs.Trigger value="reports" disabled class="text-lg font-bold">Reports</Tabs.Trigger>
-					<Tabs.Trigger value="notifications" disabled class="text-lg font-bold">Notifications</Tabs.Trigger>
+					<Tabs.Trigger value="overview" class="text-md font-bold">Overview</Tabs.Trigger>
+					<Tabs.Trigger value="analytics" class="text-md font-bold">Analytics</Tabs.Trigger>
+					<Tabs.Trigger value="reports" disabled class="text-md font-bold">Reports</Tabs.Trigger>
+					<Tabs.Trigger value="notifications" disabled class="text-md font-bold">Notifications</Tabs.Trigger>
 				</Tabs.List>
 
 
@@ -359,10 +382,10 @@ console.log(lastReportingDate, currentDate, timeDifference);
 											>
 											</Switch>
 												
-									</div>
-	
-									<hr/>									
-								{/if}
+										</div>
+		
+										<hr/>									
+										{/if}
 	
 							</li>
 							<li>
@@ -377,7 +400,8 @@ console.log(lastReportingDate, currentDate, timeDifference);
 								</div>
 								<div class="timeline-end timeline-box bg-background tracking-tight text-sm font-medium" style="padding: 6px;">Last Full Quarter</div>
 							</li>
-							</ul>						
+							</ul>	
+			
 
 							</div>
 						</Card.Content>
@@ -458,7 +482,7 @@ console.log(lastReportingDate, currentDate, timeDifference);
 				
 											<Tabs.List>
 												<Tabs.Trigger class="flex-grow text-center" value="totals">Total</Tabs.Trigger>
-												<Tabs.Trigger class="flex-grow text-center" value="new_closed">New/Closed</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="new_closed">Started/Stopped Trading</Tabs.Trigger>
 											</Tabs.List>
 										</div>
 				
@@ -522,10 +546,11 @@ console.log(lastReportingDate, currentDate, timeDifference);
 					<Card.Root class="col-span-3">
 						<Card.Header>
 							<Card.Title>Recent Sales</Card.Title>
-							<Card.Description>You made 265 sales this month.</Card.Description>
+							<!-- <Card.Description>You made 265 sales this month.</Card.Description> -->
 						</Card.Header>
 						<Card.Content>
-							<RecentSales />
+							<!-- <RecentSales /> -->
+							<ObservablePlot2 options={topCikValueOptions}/>
 						</Card.Content>
 
 
@@ -550,6 +575,7 @@ console.log(lastReportingDate, currentDate, timeDifference);
 						</Card.Header>
 						<Card.Content>
 							<RecentSales />
+							
 						</Card.Content>
 					</Card.Root> -->
 				</div>
@@ -597,7 +623,7 @@ console.log(lastReportingDate, currentDate, timeDifference);
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Active Now</Card.Title>
-							<Activity class="h-4 w-4 text-muted-foreground" />
+							<ActivityLog class="h-4 w-4 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">+573</div>

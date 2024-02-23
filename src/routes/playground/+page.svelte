@@ -159,6 +159,11 @@
 
 </script>
 
+<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Layerchart - Synthetic Data</h2>
+<div>
+    <AreaSimple />
+</div>
+
 <!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">eCharts - Synthetic Data</h2>
 <div class="app">
     <Chart options={options} />
@@ -269,14 +274,13 @@
 </div>
 
 <div class="my-4">
-<!-- <Bar 
+<Bar 
 data={entries_qtrstats_chart}
-/> -->
+/>
 
 </div>
-<!-- <div>
-    <AreaSimple />
-</div> -->
+
+
 
 
 

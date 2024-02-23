@@ -26,10 +26,11 @@
         placement="bottom"
         format={(d) => format(d, PeriodType.Day, "short")}
         rule
+        labelProps={{ class:"fill-primary" }}
     />
     <Area
-        line={{ class: "stroke-2 stroke-chart" }}
-        class="fill-chart/30"
+    class="fill-chart/30"
+    line={{ class: "stroke-2 stroke-chart" }}
     />
     <Highlight points lines />
     </Svg>

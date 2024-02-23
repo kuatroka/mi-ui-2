@@ -56,10 +56,13 @@ const config = {
 					DEFAULT: 'hsl(var(--card) / <alpha-value>)',
 					foreground: 'hsl(var(--card-foreground) / <alpha-value>)'
 				},
-
+				///////////////////
 				chart: {
 					DEFAULT: 'hsl(var(--chart) / <alpha-value>)',
 					foreground: 'hsl(var(--chart-foreground) / <alpha-value>)'
+				},
+				surface: {
+					100: 'hsl(var(--surface-100) / <alpha-value>)'
 				}
 			},
 			borderRadius: {

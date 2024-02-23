@@ -1,7 +1,7 @@
 <script lang="ts">
     import * as Plot from "@observablehq/plot";
     
-    export let options: any;
+    export let options: {};
 
     function myplot(node: HTMLElement): void {
         node.appendChild(

@@ -39,6 +39,7 @@
     <Svg>
       <Axis placement="left"   format={(d) => formatMetric(d, 'decimal')}/>
       <Axis placement="bottom" ticks={6} 
+      labelProps={{ class:"fill-primary" }}
       />
       <!-- labelProps={{ class:"red" }} -->
       <!-- <Text value={'ratio'} x={6} y={-5} text-anchor="start"/> -->
