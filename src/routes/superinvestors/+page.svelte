@@ -1,10 +1,17 @@
 <script lang="ts">
-	import {Activity,CreditCard,DollarSign,
-			Landmark,Users, CalendarDays, CandlestickChart,
-			Maximize2, Maximize} from "lucide-svelte";
+	// import {Activity,CreditCard,DollarSign,
+	// 		Landmark,Users, CalendarDays, CandlestickChart,
+	// 		Maximize2, Maximize} from "lucide-svelte";
+
+	import MdiCurrencyUsdCircleOutline from 'virtual:icons/mdi/currency-usd-circle-outline'
+	import MdiBank from 'virtual:icons/mdi/bank'
+	import MdiCalendarClockOutline from '~icons/mdi/calendar-clock-outline'
+	import MdiTrendingUp from '~icons/mdi/trending-up'
+	import MdiCreditCard from '~icons/mdi/credit-card'
+	import MdiAccountSupervisor from '~icons/mdi/account-supervisor'
 
 	import { ActivityLog } from "radix-icons-svelte";
-	import ObservablePlot2 from "$lib/components/observableplot/observablePlot2.svelte"
+	import ObservablePlot from "$lib/components/observableplot/observablePlot.svelte"
 
 	import * as Card from "$lib/components/ui/card";
 	import * as Tabs from "$lib/components/ui/tabs";
@@ -14,7 +21,9 @@
 	import { Button } from "$lib/components/ui/button";
 	
 	import {format} from 'svelte-ux';
-	import { pivotLonger } from '../../../node_modules/layerchart/dist/utils/pivot';
+	
+	import { pivotLonger}  from 'layerchart';
+	// import { createDateSeries } from 'layerchart/utils/genData';
     import { flatGroup } from 'd3-array';
 
 	import {Overview, RecentSales	} from "$lib/components/dashboard";
@@ -156,7 +165,8 @@ let topCikValueOptions = {
 
 
 </script>
-<pre>{JSON.stringify(entries_qtrstats_chart.slice(0, 1), null, 2)}</pre>
+
+<!-- <pre>{JSON.stringify(entries_qtrstats_chart.slice(0, 1), null, 2)}</pre> -->
 <!-- showCompleted: {entries_qtrstats_chart} -->
 
 <!-- {#each entries_qtrstats_chart.reverse().slice(0, 5) as entry}
@@ -265,7 +275,7 @@ let topCikValueOptions = {
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Value</Card.Title>
-							<DollarSign class="h-4 w-4 text-muted-foreground" />
+							<MdiCurrencyUsdCircleOutline class="h-6 w-6 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">${format(data.totals[0].last_full_value, "metric")}</div>
@@ -278,7 +288,7 @@ let topCikValueOptions = {
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Superinvestors</Card.Title>
-							<Landmark class="h-4 w-4 text-muted-foreground" />
+							<MdiBank class="h-6 w-6 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">{format(data.totals[0].ttl_ciks, "integer")}</div>
@@ -290,7 +300,7 @@ let topCikValueOptions = {
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Years</Card.Title>
-							<CalendarDays class="h-4 w-4 text-muted-foreground" />
+							<MdiCalendarClockOutline class="h-6 w-6 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">{data.totals[0].ttl_years}</div>
@@ -303,7 +313,7 @@ let topCikValueOptions = {
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Assets</Card.Title>
-							<CandlestickChart class="h-4 w-4 text-muted-foreground" />
+							<MdiTrendingUp class="h-6 w-6 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">{format(data.totals[0].ttl_assets, "integer")}</div>
@@ -316,7 +326,7 @@ let topCikValueOptions = {
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Cumulative RR</Card.Title>
-							<DollarSign class="h-4 w-4 text-muted-foreground" />
+							<MdiCurrencyUsdCircleOutline class="h-6 w-6 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">${format(data.totals[0].last_full_value, "metric")}</div>
@@ -329,7 +339,7 @@ let topCikValueOptions = {
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Current RR</Card.Title>
-							<DollarSign class="h-4 w-4 text-muted-foreground" />
+							<MdiCurrencyUsdCircleOutline class="h-6 w-6 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">${format(data.totals[0].last_full_value, "metric")}</div>
@@ -545,12 +555,12 @@ let topCikValueOptions = {
 					</Card.Root>
 					<Card.Root class="col-span-3">
 						<Card.Header>
-							<Card.Title>Recent Sales</Card.Title>
+							<Card.Title>Top Ten</Card.Title>
 							<!-- <Card.Description>You made 265 sales this month.</Card.Description> -->
 						</Card.Header>
 						<Card.Content>
 							<!-- <RecentSales /> -->
-							<ObservablePlot2 options={topCikValueOptions}/>
+							<ObservablePlot options={topCikValueOptions}/>
 						</Card.Content>
 
 
@@ -587,7 +597,7 @@ let topCikValueOptions = {
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Total Revenue</Card.Title>
-							<DollarSign class="h-4 w-4 text-muted-foreground" />
+							<MdiCurrencyUsdCircleOutline class="h-6 w-6 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">$45,231.89</div>
@@ -599,7 +609,7 @@ let topCikValueOptions = {
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Subscriptions</Card.Title>
-							<Users class="h-4 w-4 text-muted-foreground" />
+							<MdiAccountSupervisor class="h-6 w-6 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">+2350</div>
@@ -611,7 +621,7 @@ let topCikValueOptions = {
 							class="flex flex-row items-center justify-between space-y-0 pb-2"
 						>
 							<Card.Title class="text-sm font-medium">Sales</Card.Title>
-							<CreditCard class="h-4 w-4 text-muted-foreground" />
+							<MdiCreditCard class="h-6 w-6 text-muted-foreground" />
 						</Card.Header>
 						<Card.Content>
 							<div class="text-2xl font-bold">+12,234</div>

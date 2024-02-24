@@ -4,6 +4,7 @@
 	import { page } from '$app/stores'
 	import debounce from 'debounce';	
 	import { format } from 'svelte-ux';
+
 	
 	import {createTable, Subscribe, Render,	createRender} from "svelte-headless-table";
 	import {addSortBy, addPagination,	addTableFilter,
@@ -14,7 +15,6 @@
 	import  Actions  from "./data-table-actions.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { CaretSort, ChevronDown, ChevronUp } from "radix-icons-svelte";
-	import { X, ArrowUpDown } from 'lucide-svelte';
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 	import { cn } from "$lib/utils";
 	import { Input } from "$lib/components/ui/input";

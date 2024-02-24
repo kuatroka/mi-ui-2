@@ -1,7 +1,7 @@
 <script lang="ts">
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
     import { Button } from "$lib/components/ui/button";
-    import { MoreHorizontal } from "lucide-svelte";
+    import MdiDotsHorizontal from '~icons/mdi/dots-horizontal'
     export let id: string;
   </script>
   <DropdownMenu.Root>
@@ -13,7 +13,7 @@
         class="relative w-8 h-8 p-0"
       >
         <span class="sr-only">Open menu</span>
-        <MoreHorizontal class="w-4 h-4" />
+        <MdiDotsHorizontal class="w-4 h-4" />
       </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>

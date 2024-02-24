@@ -1,6 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { getCik, getQtrStats, getTotals } from '$lib/server/db/sqlite';
 
+const quarters = ['1999Q1', '1999Q2', '1999Q3', '2001Q3', '2023Q1'];
+
 export const load = async ({ url }) => {
 	const limit = Number(url.searchParams.get('limit')) || 5;
 	const skip = Number(url.searchParams.get('skip')) || 0;
@@ -13,6 +15,7 @@ export const load = async ({ url }) => {
 	return {
 		ciks: getCik(limit, q, skip, order_by, order_dir),
 		qtrStats: await getQtrStats(),
-		totals: getTotals()
+		totals: await getTotals(),
+		quarters
 	};
 };

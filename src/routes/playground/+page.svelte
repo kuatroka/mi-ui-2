@@ -5,20 +5,27 @@
 
     import { page } from '$app/stores'
     import type { ComponentProps } from 'svelte';
-    import { Maximize } from "lucide-svelte";
-    import { Timeline, TimelineItem, Button as ButtonFlowbite } from 'flowbite-svelte';
-    import { ArrowRightOutline } from 'flowbite-svelte-icons';
+    import MdiArrowExpand from '~icons/mdi/arrow-expand'
+    import MdiArrowRight from '~icons/mdi/arrow-right'
+    // import { Timeline, TimelineItem, Button as ButtonFlowbite } from 'flowbite-svelte';
 
-    import { ToggleGroup as ToggleGroupUX, ToggleOption, TogglePanel } from 'svelte-ux';
+    import { ToggleGroup as ToggleGroupUX,
+         ToggleOption, TogglePanel,
+          NumberStepper, MenuField } from 'svelte-ux';
+
+    
     import {Rule} from 'layerchart'
-    import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/genData';
-    let data2 = createDateSeries({
-    count: 100,
-    min: 0.80,
-    max: 1.5,
-    value: 'number',
-    keys: ['assets', 'baseline'],
-  });
+//     import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/genData';
+
+        import { createDateSeries } from 'layerchart/utils/genData';
+        
+//     let data2 = createDateSeries({
+//     count: 100,
+//     min: 0.80,
+//     max: 1.5,
+//     value: 'number',
+//     keys: ['assets', 'baseline'],
+//   });
 
     import { pivotLonger } from '../../../node_modules/layerchart/dist/utils/pivot';
     import { flatGroup } from 'd3-array';
@@ -50,7 +57,8 @@
 	export let data;
 	let entries_cik = data.ciks;
     let entries_totals = data.totals;
-    $: {console.log(entries_totals[0].last_load_date);}
+    let quarters = data.quarters;
+    // $: {console.log(entries_totals[0].last_load_date);}
     let entries_qtrstats = data.qtrStats; // originally it was declared with `$:`
 
     let original_qtrstats = data.qtrStats; // Store the original data
@@ -106,13 +114,6 @@
         isCardExpanded = !isCardExpanded;
     };
 
-    let variant: ComponentProps<ToggleGroupUX>['variant'] = 'default';
-    let size: ComponentProps<ToggleGroupUX>['size'] = 'md';
-    let rounded: ComponentProps<ToggleGroupUX>['rounded'] = true;
-    let inset: ComponentProps<ToggleGroupUX>['inset'] = false;
-    let gap: ComponentProps<ToggleGroupUX>['gap'] = false;
-    let vertical: ComponentProps<ToggleGroupUX>['vertical'] = false;
-    let showPanes = false;
 
     let selectedStr = 'a';
 
@@ -137,44 +138,88 @@
         div?.firstChild?.remove(); // remove old chart, if any
         div?.append(Plot.lineY(data4).plot({grid: true})); // add the new chart
     }
+//////////////////////
 
     // options for eCharts 
-    const options: EChartsOptions = {
-        xAxis: {
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        type: 'category',
-        },
-        yAxis: {
-        type: 'value',
-        },
-        series: [
-        {
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
-            type: 'bar',
-        },
-        ],
-    };
+const options: EChartsOptions = {
+  legend: {padding: 10, left: 'left', top: 'top', orient: 'vertical'},
+  tooltip: {},
+  toolbox: {
+    left: 'center',
+    feature: {
+      dataZoom: {}
+    }
+  },
+  xAxis: {type: 'time'},
+  yAxis: {  },
+  series: [
+    {
+      type: 'line',
+      name: '# Investors',
+      data: data.qtrStats.reverse().map(entry => [new Date(entry.quarter_end_date), entry.ttl_num_assets_all_ciks_per_qtr]),
+      encode: {
+        x: 'date',
+        y: 'num_stopped_ciks',
+        tooltip: ['date', 'num_stopped_ciks']
+      }
+    },
+  ]
+};
 
 
 
+$: randomDateData = [10, 23, 34];
+let dateRange = 10;
+
+let optionsQuarters = [
+    { label: '1999Q1', value: '1999Q1' },
+    { label: '1999Q2', value: '1999Q2' },
+    { label: '1999Q3', value: '1999Q3' },
+    { label: '2001Q3', value: '2001Q3' },
+    { label: '2023Q1', value: '2023Q1' },
+];
+
+// const quarters = ["1999Q1", "1999Q2", "1999Q3", "2001Q3", "2023Q1"];
+
+$: quarters_index =  -1 ?? -1;
+$: quarter = quarters[quarters.length - 1] ;
+  
+  
 </script>
+{quarter}
+<div class="w-[100] m-4">
 
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Layerchart - Synthetic Data</h2>
-<div>
-    <AreaSimple />
+    <MenuField  bind:value={quarter} stepper classes={{ menuIcon: "hidden" }}/>
 </div>
 
+
+<!-- <div class="m-4 w-[100]"></div>
+<NumberStepper label="Date range" bind:value={quarters_index} class="w-1/10" /> -->
+
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Layerchart - Real Data - # Assets</h2>
+<div>
+    <AreaSimple  data={entries_qtrstats.map(entry => ({
+        date: new Date(entry.quarter_end_date),
+        value: entry.ttl_num_assets_all_ciks_per_qtr,
+    }))
+    } />
+</div> -->
+
+
+<!-- ////////////////////// -->
 <!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">eCharts - Synthetic Data</h2>
 <div class="app">
     <Chart options={options} />
 </div> -->
+<!-- ////////////////////// -->
 
 
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Observable Plot Type 1 - Synthetic Data</h2>
-<div on:mousemove={onMousemove} bind:this={div} role="img"></div>
+<!-- ////////////////////// -->
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Observable Plot Type 1 - Synthetic Data</h2>
+<div on:mousemove={onMousemove} bind:this={div} role="img"></div> -->
+<!-- ////////////////////// -->
 
-
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Flowbite-svelte - Timeline</h2>
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Flowbite-svelte - Timeline</h2>
 
 <Card.Content class="mt-2">
 <Timeline>
@@ -185,14 +230,16 @@
     </TimelineItem>
     <TimelineItem title="Application UI code in Tailwind CSS" date="April 2022">
       <p class="text-base font-normal text-gray-500 dark:text-gray-400">Get started with dozens of web components and interactive elements built on top of Tailwind CSS.</p>
-      <Button color="alternative">Learn more<ArrowRightOutline class="ms-2 w-3 h-3" />        
+      <Button color="alternative">Learn more<MdiArrowRight class="ms-2 w-3 h-3" />        
       </Button>
     </TimelineItem>
   </Timeline>
-</Card.Content>
+</Card.Content> -->
 
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">DaisyUI - Timeline</h2>
-<Card.Content class="mt-2">
+
+<!-- ////////////////////// -->
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">DaisyUI - Timeline</h2> -->
+<!-- <Card.Content class="mt-2">
     <ul class="timeline timeline-vertical [--timeline-col-start:2rem]">
     <li>
         <div class="timeline-start">1984</div>
@@ -242,7 +289,7 @@
         <div class="timeline-end timeline-box bg-background">Apple Watch</div>
     </li>
     </ul>
-</Card.Content>
+</Card.Content> -->
 
 
 
@@ -252,6 +299,8 @@
 {/each} -->
 <!-- <pre>{JSON.stringify(multiSeriesFlatData.reverse().slice(0,4), null, 2)}</pre> -->
 
+
+<!-- ////////////////////// -->
 <div class="flex flex-col items-end m-2 justify-end">
         <Toggle
         bind:pressed={showIncomple}
@@ -272,13 +321,16 @@
     <Label for="add-partial-qtr">Show partial Qtr</Label>
     </div>
 </div>
+<!-- ////////////////////// -->
 
-<div class="my-4">
+
+<!-- <div class="my-4">
+    <h1 class="mx-4 scroll-m-20 py-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0"
+    >Layerchart - Real Data</h1>
 <Bar 
 data={entries_qtrstats_chart}
 />
-
-</div>
+</div> -->
 
 
 
@@ -294,7 +346,6 @@ data={entries_qtrstats_chart}
                 <Tabs.Trigger class="flex-grow text-center" value="assets">Assets</Tabs.Trigger>
                 <Tabs.Trigger class="flex-grow text-center" value="positions">Positions</Tabs.Trigger>
             </Tabs.List>
-	
 
 
             <Tabs.Content value="performance" class="space-y-2">
@@ -302,7 +353,7 @@ data={entries_qtrstats_chart}
                     <Card.Title>Overview</Card.Title>
                 </Card.Header> -->
                 <Card.Content class="min-h-[450px]">
-                        <DataTable data={entries_cik}/>
+                        <!-- <DataTable data={entries_cik}/> -->
                 </Card.Content>								
             </Tabs.Content>
 
@@ -310,11 +361,11 @@ data={entries_qtrstats_chart}
                 <Button class="m-1 ml-6"
                 on:click={toggleCardSize}
                 >
-                <Maximize />
+                <MdiArrowExpand />
                 </Button>
                 <Card.Content class="min-h-[450px]">
                     
-                    <AreaClipped  data={entries_qtrstats_chart} y='value'/>	
+                    <!-- <AreaClipped  data={entries_qtrstats_chart} y='value'/>	 -->
                 </Card.Content>
 						
             </Tabs.Content>
@@ -333,18 +384,18 @@ data={entries_qtrstats_chart}
 
                         <Tabs.Content value="totals" class="space-y-2">
                             <Card.Content class="min-h-[450px]">
-                                <Bar data={entries_qtrstats_chart} y='ciks'/>		
+                                <!-- <Bar data={entries_qtrstats_chart} y='ciks'/>		 -->
                             </Card.Content>								
                         </Tabs.Content>
 
                         <Tabs.Content value="new_closed" class="space-y-2">
                             <Card.Content class="min-h-[450px]">
-                                    <Line data={entries_qtrstats_chart} y='open_close'	/>	
-                                    <MultiLine
+                                    <!-- <Line data={entries_qtrstats_chart} y='open_close'	/>	 -->
+                                    <!-- <MultiLine
                                         {categoryColours}
                                         {multiSeriesFlatData}
                                         {dataByCategory}
-                                        />							
+                                        />							 -->
                             </Card.Content>								
                         </Tabs.Content>
 
@@ -355,7 +406,7 @@ data={entries_qtrstats_chart}
             <Tabs.Content value="assets" class="space-y-2">	
                 <Card.Content class="min-h-[450px]">
 
-                    <Bar data={entries_qtrstats_chart} y='assets'/>								
+                    <!-- <Bar data={entries_qtrstats_chart} y='assets'/>								 -->
                 </Card.Content>
             </Tabs.Content>
 
@@ -372,19 +423,17 @@ data={entries_qtrstats_chart}
 
                         <Tabs.Content value="totals" class="space-y-2">
                             <Card.Content class="min-h-[450px]">
-                                    <Bar data={entries_qtrstats_chart} y='positions'/>								
+                                    <!-- <Bar data={entries_qtrstats_chart} y='positions'/>								 -->
                             </Card.Content>								
                         </Tabs.Content>
                         <Tabs.Content value="ratio_oc" class="space-y-2">
                             <Card.Content class="min-h-[450px]">
-                                    <Line data={entries_qtrstats_chart} y='open_close'
+                                    <!-- <Line data={entries_qtrstats_chart} y='open_close' -->
                                     />								
                             </Card.Content>								
                         </Tabs.Content>
 
                     </Tabs.Root>
-
-
 
 
                 </Card.Content>
@@ -394,18 +443,22 @@ data={entries_qtrstats_chart}
     </Card.Root>
 </div>
 
-<Card.Content class="mt-2 inline-grid gap-2">
+
+
+<!-- ///////////////////// -->
+<div class="ml-4 gap-2 w-1/5">
+    <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Toggle Group 1</h2>
         <ToggleGroup.Root type="single" bind:value={selectedStr} variant="outline">
             <ToggleGroup.Item value="a">Totals</ToggleGroup.Item>
             <ToggleGroup.Item value="r">Open/Close</ToggleGroup.Item>
-          </ToggleGroup.Root>
-</Card.Content>
+        </ToggleGroup.Root>
+</div>
+<!-- ///////////////////// -->
 
 
-
-
-
-<div class="inline-grid gap-2">
+<!-- ///////////////////// -->
+<div class="ml-4 gap-2 w-1/5">
+    <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Toggle Group 2</h2>
         <ToggleGroupUX variant="fill-light" bind:value={selectedStr}>
             <ToggleOption value="all">a</ToggleOption>
             <ToggleOption value="missed">b</ToggleOption>
@@ -416,14 +469,13 @@ data={entries_qtrstats_chart}
                 <ToggleGroup.Item value="r">Open/Close</ToggleGroup.Item>
             </ToggleGroup.Root> -->
         </ToggleGroupUX>
-    </div>
-
-
-Toggle value: {selectedStr}
+        Toggle value: {selectedStr}
+</div>
+<!-- ///////////////////// -->
 
 <!--  Line chart from layerchart-->
 
-<h1 class="text-2xl text-amber-500 ml-4 my-4"> Line Chat from layerchart - Real Data</h1>
+<!-- <h1 class="text-2xl text-amber-500 ml-4 my-4"> Line Chat from layerchart - Real Data</h1> -->
 
 <!-- <Line data={entries_qtrstats_chart} 
 y="open_close"
@@ -433,20 +485,21 @@ showRule={true} /> -->
 <MultiLine
 /> -->
 
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">MultiLine Chat from layerchart - Real Data</h2>
 
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Switch</h2>
 <div class="flex items-center gap-2">
     <Switch 
     id="add-partial-qtr"
     class="ml-auto"
     bind:checked={showIncomple}
     >
-    <!-- onCheckedChange={handleCheckedChange} -->
 </Switch>
 <Label for="add-partial-qtr">Show partial Qtr</Label>
-</div>
+</div> -->
+<!-- onCheckedChange={handleCheckedChange} -->
 
 
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">MultiLine Chat from layerchart - Real Data</h2> -->
 <!-- <MultiLine
 {categoryColours}
 {multiSeriesFlatData}
@@ -454,11 +507,11 @@ showRule={true} /> -->
 {series_columns}
 /> -->
 
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Observable Plot  Type 1 - Real Data</h2>
-<MyPlot options={plotOptions} />
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">myPlot - Real Data</h2>
+<MyPlot options={plotOptions} /> -->
 
 
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Observable Plot Type 2 - Synthetic Data </h2>
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">observablePlot - Synthetic Data </h2>
 <ObservablePlot 
 	options={{
 		title: 'A simple bar chart',
@@ -466,26 +519,29 @@ showRule={true} /> -->
 	}}
     fixedWidth={true}
     width={200} 
-    />
+    /> -->
 
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Observable Plot Type 2 - Real Data </h2>
-<ObservablePlot 
+<!-- ///////////// -->
+
+<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">observablePlot  - Real Data </h2>
+<!-- <ObservablePlot 
 	options={{
         title: 'Assets and Investors',
         subtitle: 'This is a subtitle',
         marginLeft: 46,
 		marks: [Plot.lineY(entries_qtrstats_chart, {x: "date", y: "assets", stroke: "teal", tip: "x"}),
-        Plot.lineY(entries_qtrstats_chart, {x: "date", y: "ciks", stroke: "blue", tip: "x"})
+        // Plot.lineY(entries_qtrstats_chart, {x: "date", y: "ciks", stroke: "blue", tip: "x"})
     ]        
 	}} 
-    fixedWidth={true}
-    width={400} 
+    fixedWidth={false}
+    width={800} 
     class="px-4"
-    />
+    /> -->
+
     <!-- class="px-4 stroke-2 stroke-amber-500 text-red-400" -->
     <!-- stroke in class- regulates the color of the axis Y numbers -->
 
-<div class="mx-4">
+<!-- <div class="mx-4">
     <ObservablePlot 
 	options={{
         title: 'A more complex bar chart',
@@ -514,14 +570,14 @@ showRule={true} /> -->
         }}
             fixedWidth={true}
             width={200}  />
-        </div>
+</div> -->
 
 
 
 
-<style>
+<!-- <style>
 .app {
     width: 100vw;
     height: 100vh;
 }
-</style>
+</style> -->

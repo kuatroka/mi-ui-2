@@ -4,7 +4,7 @@
 	import { Button } from "$lib/components/ui/button";
 </script>
 
-<DropdownMenu.Root positioning={{ placement: "bottom-end" }}>
+<DropdownMenu.Root>
 	<DropdownMenu.Trigger asChild let:builder>
 		<Button
 			variant="ghost"
