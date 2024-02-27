@@ -17,8 +17,8 @@
     import {Rule} from 'layerchart'
 //     import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/genData';
 
-        import { createDateSeries } from 'layerchart/utils/genData';
-        
+        // import { createDateSeries } from 'layerchart/utils/genData';
+
 //     let data2 = createDateSeries({
 //     count: 100,
 //     min: 0.80,

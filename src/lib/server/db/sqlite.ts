@@ -20,13 +20,13 @@ export function getTotals(): Totals[] {
 `;
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all();
-	console.log(rows.slice(0, 2));
-	console.log(rows.length);
+	// console.log(rows.slice(0, 2));
+	// console.log(rows.length);
 	return rows as Totals[];
 }
 
 //  ### every quarter and value
-export const getQtrStats = (): QtrStats[] => {
+export const getQtrStats = (quarter?: string): QtrStats[] => {
 	const sql = `
 	SELECT
 	quarter,
@@ -43,12 +43,13 @@ export const getQtrStats = (): QtrStats[] => {
 	is_quarter_completed,
 	ratio_new_stopped_cusips
 	FROM every_qtr_twrr
+	${quarter ? 'WHERE quarter = ?' : ''}
 	ORDER BY quarter
 	`;
 	const stmnt = db.prepare(sql);
-	const rows = stmnt.all();
-	console.log(rows.slice(0, 2));
-	console.log(rows.length);
+	const rows = quarter ? stmnt.all(quarter) : stmnt.all();
+	// console.log(rows.slice(0));
+	// console.log(rows.length);
 	return rows as QtrStats[];
 };
 
@@ -79,8 +80,8 @@ export function getCik(
 	`;
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all({ limit, q, skip });
-	console.log(rows.slice(0, 2));
-	console.log(rows.length);
+	// console.log(rows.slice(0, 2));
+	// console.log(rows.length);
 	return rows as Cik[];
 }
 
@@ -100,8 +101,8 @@ export function getCikDetails(cik?: string, quarter?: string): Cik[] {
 `;
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all({ cik, quarter });
-	console.log(rows.slice(0, 2));
-	console.log(rows.length);
+	// console.log(rows.slice(0, 2));
+	// console.log(rows.length);
 	return rows as Cik[];
 }
 

@@ -8,7 +8,7 @@
 
     export let fixedWidth: boolean = false;
 
-    export let width = 400;
+    let width = 1400;
 
     $: hash = JSON.stringify({ ...options, width });
 
