@@ -1,6 +1,6 @@
 import { SQLITE_FULL_PATH } from '$env/static/private';
 import Database from 'better-sqlite3';
-import type { Totals, Cik, QtrStats } from './types';
+import type { Totals, Cik, QtrStats, TopTenCikValue, TopTenCikTwrrYahoo, Quarters } from './types';
 
 const db = new Database(SQLITE_FULL_PATH, { verbose: console.log, readonly: true }); // remove in prod
 
@@ -104,6 +104,55 @@ export function getCikDetails(cik?: string, quarter?: string): Cik[] {
 	// console.log(rows.slice(0, 2));
 	// console.log(rows.length);
 	return rows as Cik[];
+}
+
+export function getTopTenCikTwrrYahoo(quarter: string): TopTenCikTwrrYahoo[] {
+	const sql = `
+		SELECT t.*, r.cik_name
+		FROM top_10_ciks t
+		LEFT JOIN cik_md r ON t.cik = r.cik
+		WHERE t.quarter = '${quarter}'
+		ORDER BY t.cum_twrr_yahoo DESC
+		LIMIT 10
+		`;
+	// ORDER BY t.rank_cum_twrr_yahoo DESC
+	const stmnt = db.prepare(sql);
+	const rows = stmnt.all({ quarter });
+	// console.log(rows.slice(0, 2));
+	// console.log(rows.length);
+	return rows as TopTenCikTwrrYahoo[];
+}
+
+export function getTopTenCikValue(quarter: string): TopTenCikValue[] {
+	const sql = `
+		SELECT t.*, r.cik_name
+		FROM top_10_ciks t
+		LEFT JOIN cik_md r ON t.cik = r.cik
+		WHERE t.quarter = '${quarter}'
+		ORDER BY t.value DESC
+		LIMIT 10
+		`;
+	// ORDER BY t.rank_cum_twrr_yahoo DESC
+	const stmnt = db.prepare(sql);
+	const rows = stmnt.all({ quarter });
+	// console.log(rows.slice(0, 2));
+	// console.log(rows.length);
+	return rows as TopTenCikValue[];
+}
+
+export function getQuarters(): Quarters[] {
+	const sql = `
+	SELECT quarter,
+	(SELECT MAX(quarter) FROM every_qtr_twrr) AS max_quarter,
+	(SELECT MIN(quarter) FROM every_qtr_twrr) AS min_quarter
+	FROM every_qtr_twrr
+	GROUP BY quarter
+	`;
+	const stmnt = db.prepare(sql);
+	const rows = stmnt.all();
+	// console.log(rows.slice(0, 2));
+	// console.log(rows.length);
+	return rows as Quarters[];
 }
 
 // const sql = `

@@ -22,7 +22,7 @@
 <div class="mx-6 flex items-center justify-center h-screen">
 <span class="text-xl">
 		<span class="text-chart text-8xl">Insight</span>
-		<span class="text-4xl">hidden in the plain</span>
+		<span class="text-4xl">hidden in plain</span>
 		<span class="text-chart text-8xl">Sight</span>
 	</span>
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import {page} from '$app/stores'
 	// import {Activity,CreditCard,DollarSign,
 	// 		Landmark,Users, CalendarDays, CandlestickChart,
 	// 		Maximize2, Maximize} from "lucide-svelte";
@@ -19,8 +20,10 @@
 	import { Toggle } from "$lib/components/ui/toggle";
 	import { Label } from "$lib/components/ui/label";
 	import { Button } from "$lib/components/ui/button";
+	import * as ToggleGroup from "$lib/components/ui/toggle-group";
+	import {Range} from 'flowbite-svelte'
 	
-	import {format} from 'svelte-ux';
+	import {format, ButtonGroup, Button as ButtonUx} from 'svelte-ux';
 	
 	import { pivotLonger}  from 'layerchart';
 	// import { createDateSeries } from 'layerchart/utils/genData';
@@ -36,6 +39,10 @@
 	import * as Plot from "@observablehq/plot";
 
 	export let data;
+
+	$: ({top_10_ciks_twrr_yahoo, top_10_ciks_value, quarters } = data)
+    let quarter_id = parseInt($page.url.searchParams.get('quarter_id') || data.quarter_id.toString());
+
 	$: entries_totals = data.totals;
 	$: entries_for_table = data.ciks;
 
@@ -128,13 +135,26 @@
     'total': 'Number of All Positions',
     'ratio_oc_positions': 'Ratio of Opened vs Closed Positions',
 };
+	
 
-	let activeTab = 'total';
-	function handleTabClick(event: CustomEvent<string>) {
-		activeTab = event.detail;
-	};
+let activeTab = 'total';
+function handleTabClick(event: CustomEvent<string>) {
+	activeTab = event.detail;
+};
 
-	// Get the current date
+//////////////////////////////////////////////
+let activeTab_top_ten = 'return';
+function handleTabClick_top_ten(event: CustomEvent<string>) {
+	activeTab_top_ten = event.detail;
+};
+
+let tabTitles_top_ten: Record<string, string> = {
+	'value': 'Top 10 by Value',
+	'return': 'Top 10 by Return',
+};
+//////////////////////////////////////////////
+
+// Get the current date
 let currentDate = new Date();
 
 // Calculate the end of the previous calendar quarter
@@ -161,7 +181,61 @@ let topCikValueOptions = {
 	tip: {fill: 'var(--color-emerald-500)', fontSize: 12}
 })
   ]     
-    }
+    };
+
+$: optionsTopTenTwrrYahoo = 
+		{
+		width: 1500,
+		height: 400,
+		marginLeft: 0,
+		marginTop: 0,
+		x: {label: "Cumulative Return (%)"},
+		marks: [
+
+			Plot.barX(top_10_ciks_twrr_yahoo, {x: "cum_twrr_yahoo", y: "cik_name", fill: 'var(--chart-observable)', sort: {y: "x", reverse: true},
+			channels: { cik: 'cik', Superinvestor: "cik_name" },
+			tip: {fill: 'var(--chart-foreground-observable)', fontSize: 12, stroke: 'black'},
+			// stroke: 'var(--chart-foreground-observable)'
+		 },	),
+			Plot.axisY({
+			label: null,
+			textAnchor: "start",
+			lineWidth: 20,
+			fill: 'black',
+			dx: 14,
+			tickSize: 0,
+			}),
+		]
+		};
+
+$: optionsTopTenValue = 
+	{
+		width: 1500,
+		height: 400,
+		marginLeft: 0,
+		marginTop: 0,
+	x: {
+		label: "Value ($)", 
+		tickFormat: (d:any) => d >= 1_000_000_000_000 ? `${(d / 1_000_000_000_000).toFixed(2)} T` : `${Math.floor(d / 1_000_000_000)} B`
+},
+marks: [
+	// Plot.tickY(top_10_ciks, {marker: "circle"}),
+		// Plot.ruleX([0]),
+		Plot.barX(top_10_ciks_value, {x: "value", y: "cik_name",  fill: 'var(--chart-observable)', sort: {y: "x", reverse: true},
+
+		channels: { cik: 'cik', Superinvestor: "cik_name" },
+		tip: {fill: 'var(--chart-foreground-observable)', fontSize: 12}, }),
+		Plot.axisY({
+		label: null,
+		textAnchor: "start",
+		fill: 'var(--chart-foreground-observable)',
+		dx: 14,
+		tickSize: 0,
+		}),
+	]
+};
+
+let isActive = false;
 
 
 </script>
@@ -421,7 +495,7 @@ let topCikValueOptions = {
 				<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-7">
 					<Card.Root class={isCardExpanded ? 'col-span-7' : 'col-span-4'}>
 						<Tabs.Root>
-							<Tabs.List class='w-full flex'>
+							<Tabs.List class=' flex mt-2 mx-6'>
 								<Tabs.Trigger class="flex-grow text-center" value="performance">Performance</Tabs.Trigger>
 								<Tabs.Trigger class="flex-grow text-center" value="value">Value</Tabs.Trigger>
 								<Tabs.Trigger class="flex-grow text-center" value="superinvestors">Superinvestors</Tabs.Trigger>
@@ -433,14 +507,14 @@ let topCikValueOptions = {
 								<!-- <Card.Header>
 									<Card.Title>Overview</Card.Title>
 								</Card.Header> -->
-								<Card.Content class="min-h-[450px]">
+								<Card.Content class="max-h-[400px]">
 										<DataTable data={entries_for_table}/>
 									<!-- <AreaSimple /> -->
 								</Card.Content>								
 							</Tabs.Content>
 
 							<Tabs.Content value="value" class="space-y-2">
-								<Card.Content class="min-h-[450px]">
+								<Card.Content class="max-h-[400px]">
 
 									<AreaClipped  data={entries_qtrstats_chart} y='value'/>	
 									<!-- <Button class="m-1"
@@ -452,7 +526,7 @@ let topCikValueOptions = {
 							</Tabs.Content>	
 							
 							<Tabs.Content value="superinvestors" class="space-y-2">								
-								<Card.Content class="min-h-[450px]">
+								<Card.Content class="max-h-[400px]" >
 									<Tabs.Root>
 										<div class="flex items-center justify-center gap-2">
 				
@@ -463,13 +537,13 @@ let topCikValueOptions = {
 										</div>
 				
 										<Tabs.Content value="totals" class="space-y-2">
-											<Card.Content class="min-h-[450px]">
+											<Card.Content class="max-h-[400px]">
 												<Bar data={entries_ciks} y='ciks'/>								
 											</Card.Content>								
 										</Tabs.Content>
 
 										<Tabs.Content value="new_closed" class="space-y-2">
-											<Card.Content class="min-h-[450px]">
+											<Card.Content class="max-h-[400px]">
 													<!-- <Line data={entries_qtrstats_chart} y='open_close'	/>	 -->
 													<MultiLine
 														{categoryColours}
@@ -486,7 +560,7 @@ let topCikValueOptions = {
 
 
 							<Tabs.Content value="assets" class="space-y-2">								
-								<Card.Content class="min-h-[450px]">
+								<Card.Content class="max-h-[400px]">
 									<Tabs.Root>
 										<div class="flex items-center justify-center gap-2">
 				
@@ -497,13 +571,13 @@ let topCikValueOptions = {
 										</div>
 				
 										<Tabs.Content value="totals" class="space-y-2">
-											<Card.Content class="min-h-[450px]">
+											<Card.Content class="max-h-[400px]">
 												<AreaClipped  data={entries_cusips} y='assets'/>								
 											</Card.Content>								
 										</Tabs.Content>
 
 										<Tabs.Content value="new_closed" class="space-y-2">
-											<Card.Content class="min-h-[450px]">
+											<Card.Content class="max-h-[400px]">
 												<Line 
 												data={entries_cusips} 
 												y='ratio_new_stopped_cusips'
@@ -521,7 +595,7 @@ let topCikValueOptions = {
 							
 
 							<Tabs.Content value="positions" class="space-y-2">								
-								<Card.Content class="min-h-[450px]">
+								<Card.Content class="h-[360px]">
 									<Tabs.Root bind:value={activeTab}>
 										
 										<div class="flex items-center justify-between gap-2">
@@ -532,14 +606,14 @@ let topCikValueOptions = {
 											</Tabs.List>
 										</div>
 										<Tabs.Content value="total" class="space-y-2 ">
-											<Card.Content class="min-h-[450px]">
+											<Card.Content class="h-[360px]">
 													<!-- <Bar data={entries_qtrstats_chart} y='positions'/>	 -->
 													<AreaClipped  data={entries_positions} y='positions'/>							
 											</Card.Content>								
 										</Tabs.Content>
 										
 										<Tabs.Content value="ratio_oc_positions" class="space-y-2">
-											<Card.Content class="min-h-[450px]">
+											<Card.Content class="h-[360px]">
 													<Line data={entries_positions} y='open_close'	/>								
 											</Card.Content>								
 										</Tabs.Content>
@@ -548,36 +622,130 @@ let topCikValueOptions = {
 								</Card.Content>
 							</Tabs.Content>
 
-
-
-
 						</Tabs.Root>
 					</Card.Root>
+
+
 					<Card.Root class="col-span-3">
-						<Card.Header>
-							<Card.Title>Top Ten</Card.Title>
-							<!-- <Card.Description>You made 265 sales this month.</Card.Description> -->
-						</Card.Header>
-						<Card.Content>
-							<!-- <RecentSales /> -->
-							<ObservablePlot options={topCikValueOptions}/>
-						</Card.Content>
+						<Tabs.Root bind:value={activeTab_top_ten}>
+										
+							<div class="flex items-center justify-between gap-2">
+								<h3 class="px-4 pt-2 font-semibold leading-none tracking-tight">{tabTitles_top_ten[activeTab_top_ten]}</h3>
+								<div class="pt-2 flex items-center gap-2">
+									<form data-sveltekit-keepfocus data-sveltekit-noscroll class="flex items-center">  
+										<input type="range" name="quarter_id"
+										min="0" 
+										max={quarters.length -  1} 
+										bind:value={quarter_id}
+										on:change={e=>e.currentTarget.form?.requestSubmit()}
+										class="w-[200px]"
+										/>
 
 
+									</form>
+									<h3 class="font-semibold leading-none tracking-tight text-chart">{quarters[+quarter_id]}</h3>
+							</div>
+
+
+
+							<div class="mt-2 mx-4">
+								<Tabs.List>
+									<Tabs.Trigger class="flex-grow text-center" value="return">Return</Tabs.Trigger>
+									<Tabs.Trigger class="flex-grow text-center" value="value">Value</Tabs.Trigger>
+								</Tabs.List>
+							</div>
+							</div>
+							<Tabs.Content value="value" class="space-y-2">
+								<Card.Content>
+									<ObservablePlot options={optionsTopTenValue} />							
+								</Card.Content>								
+							</Tabs.Content>
+							
+							<Tabs.Content value="return" class="space-y-2">
+								<Card.Content>
+									
+									<ObservablePlot options={optionsTopTenTwrrYahoo}  />								
+								</Card.Content>								
+							</Tabs.Content>
+	
+						</Tabs.Root>
 					</Card.Root>
+
+
+
 				</div>
+
+				<h2
+				class="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0"
+				>
+				Value, Assets & Positions
+				</h2>
+
+				<!-- ///////////////////////////////////////////////////// -->
 				<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-7">
 					<Card.Root class="col-span-4">
 						<Card.Header>
 							<Card.Title>Value</Card.Title>
-
+							
 						</Card.Header>
-						<Card.Content>
+						<Card.Content >
 							<AreaClipped  data={entries_qtrstats_chart}/>
 							
 							<!-- <AreaClipped /> -->
 						</Card.Content>
 					</Card.Root>
+					<!-- ///////////////////////////////////////////////////// -->
+
+					<Card.Root class="col-span-3">
+						<Card.Header class="flex justify-between">
+							<Card.Title class="flex items-center gap-2">Top 10
+
+							<div class="flex items-center gap-2">
+									<form data-sveltekit-keepfocus data-sveltekit-noscroll class="flex items-center">  
+										<!-- <input type="range" name="quarter_id"
+										min="0" 
+										max={quarters.length -  1} 
+										bind:value={quarter_id}
+										on:change={e=>e.currentTarget.form?.requestSubmit()}
+										class="w-[200px]"
+										/> -->
+									<Range 
+									name="quarter_id"
+									id="medium-range" 
+									min="0" 
+									max={quarters.length -  1} 
+									bind:value={quarter_id}
+									on:change={event => event.target?.form?.requestSubmit()}
+									class=" w-[200px] h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+
+									/>
+									
+									</form>
+									<h3 class="font-semibold leading-none tracking-tight text-chart">{quarters[+quarter_id]}</h3>
+							</div>
+
+							<div>
+								<ToggleGroup.Root type="single">
+									<ToggleGroup.Item value="bold" aria-label="Toggle return">
+										<p>Return</p>
+									</ToggleGroup.Item>
+									<ToggleGroup.Item value="italic" aria-label="Toggle value">
+										<p>Value</p>
+
+									</ToggleGroup.Item>
+								  </ToggleGroup.Root>
+
+							</div>
+							
+							</Card.Title>
+						</Card.Header>
+
+						<Card.Content>
+								<ObservablePlot options={optionsTopTenTwrrYahoo}  />
+						</Card.Content>
+					</Card.Root>
+
+
 					<!-- <Card.Root class="col-span-3">
 						<Card.Header>
 							<Card.Title>Recent Sales</Card.Title>

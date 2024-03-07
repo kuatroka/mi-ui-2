@@ -4,7 +4,7 @@
     import MdiDotsHorizontal from '~icons/mdi/dots-horizontal'
     export let id: string;
   </script>
-  <DropdownMenu.Root>
+  <DropdownMenu.Root >
     <DropdownMenu.Trigger asChild let:builder>
       <Button
         variant="ghost"

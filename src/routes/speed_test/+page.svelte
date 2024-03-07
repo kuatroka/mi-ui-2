@@ -1,8 +1,8 @@
 <script lang="ts">
 
     import { Chart, type EChartsOptions } from '$lib/components/echarts'
-    import * as Plot from "@observablehq/plot";
-    import MyPlot from '$lib/components/observableplot/Plot.svelte'
+    // import * as Plot from "@observablehq/plot";
+    // import MyPlot from '$lib/components/observableplot/Plot.svelte'
     
 
     import AreaSimple from "$lib/components/layerchart/area-simple/area-simple.svelte";
@@ -82,23 +82,23 @@ const options: EChartsOptions = {
 
 </script>
 
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Layerchart - Real Data - # Assets</h2>
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">Layerchart - Real Data - # Assets</h2>
 <div>
     <AreaSimple  data={entries_qtrstats.map(entry => ({
         date: new Date(entry.quarter_end_date),
         value: entry.ttl_num_assets_all_ciks_per_qtr,
     }))
     } />
-</div>
+</div> -->
 
 
 
 
-<h2 class="text-3xl font-bold tracking-tight ml-4  my-4">MyPlot  - Real Data </h2>
+<!-- <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">MyPlot  - Real Data </h2>
 
-    <MyPlot 
+<ObservablePlot 
 	options={{
-        fixedWidth: true,
+        // fixedWidth: true,
     width:1800 ,
     title: 'Assets and Investors',
     subtitle: 'This is a subtitle',
@@ -107,9 +107,8 @@ const options: EChartsOptions = {
         // Plot.lineY(entries_qtrstats_chart, {x: "date", y: "ciks", stroke: "blue", tip: "x"})
     ]        
 }} 
-
     class="px-4 w-full"
-    />
+/> -->
     
 
 <h2 class="text-3xl font-bold tracking-tight ml-4  my-4">eCharts - Real Data</h2>

@@ -16,7 +16,7 @@
 
 </script>
 
-<div class="h-[400px] border rounded">
+<div class="h-[400px] p-4 border rounded">
     <Chart
       data={data}
       x={x}
@@ -68,8 +68,9 @@
         variant="none"
         class="text-sm font-semibold text-chart/100 leading-3"
         let:data
-      >
-         ${format(data[y], "metric")}
+        >
+        ${format(data[y], "metric")}
+        <!-- tooltip={{ onClick: () => console.log('hello world') }} -->
       </Tooltip>
   
       <Tooltip

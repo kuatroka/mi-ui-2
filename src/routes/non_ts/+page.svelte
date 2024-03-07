@@ -1,11 +1,14 @@
 <script lang="ts">
 
-    // import * as aq from 'arquero';
     import { invalidate, goto } from '$app/navigation';
 
 
     import * as Plot from "@observablehq/plot";
     import ObservablePlot from '$lib/components/observableplot/Plot.svelte';
+    import { createDateSeries } from '../../../node_modules/layerchart/dist/utils/genData';
+
+
+
     export let data;
 
     let dataset: any[] = [];
@@ -18,17 +21,6 @@ $: { dataset = data.qtrStats.map(entry => ({
     }))
 };
 
-
-    // let aq_df = aq.from(data.qtrStats)
-    //             .derive({
-    //             quarter_end_date: d => aq.op.parse_date(d!.quarter_end_date)
-    //             })
-    //             .select(['quarter', 'quarter_end_date', 'num_stopped_ciks', 'num_new_ciks', 'ttl_value_all_ciks_per_qtr']);
-
-
-    // let quarteres = aq_df.select('quarter')._data['quarter']['data'];
-    // let quarteres2 = aq_df.select('quarter').totalRows();
-    // let quarters = aq_df.select('quarter').array('quarter');
     let quarters = data.qtrStats.map(d => d.quarter);
 
 
@@ -98,14 +90,14 @@ $: { dataset = data.qtrStats.map(entry => ({
             />
     </div>         
 
-    <div class="mx-4 w-1/2 border border-red-300" >
-        <div class="my-4 flex flex-col items-center">
-            <form action="?/slider_cik" method="get">
-                <input type="hidden" name="quarter" value={quarterValue} />
-                <input name="cik" type="range" min="0" max={quarters.length - 1} value={sliderValue} on:input={debounce(updateSlider)} step="1" />
-                <p>Quarter: {quarterValue}</p>
-            </form>
-        </div>
+<div class="mx-4 w-1/2 border border-red-300" >
+<div class="my-4 flex flex-col items-center">
+    <form action="?/slider_cik" method="get">
+        <input type="hidden" name="quarter" value={quarterValue} />
+        <input name="cik" type="range" min="0" max={quarters.length - 1} value={sliderValue} on:input={debounce(updateSlider)} step="1" />
+        <p>Quarter: {quarterValue}</p>
+    </form>
+</div>
 
             <ObservablePlot 
             options={{

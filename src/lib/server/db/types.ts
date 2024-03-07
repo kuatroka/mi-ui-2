@@ -56,3 +56,27 @@ export type CikDetails = {
 	quarter: string;
 	link: string;
 };
+
+export type TopTenCikTwrrYahoo = {
+	cik: string;
+	cik_name: string;
+	quarter: string;
+	quarter_end_date: string;
+	cum_twrr_yahoo: number;
+	// rank_cum_twrr_yahoo: string;
+};
+
+export type TopTenCikValue = {
+	cik: string;
+	cik_name: string;
+	quarter: string;
+	quarter_end_date: string;
+	value: number;
+	// rank_value: number;
+};
+
+export type Quarters = {
+	minQuarter: string;
+	maxQuarter: string;
+	quarters: string;
+};
