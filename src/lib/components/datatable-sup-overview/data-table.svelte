@@ -3,20 +3,19 @@
 	import { goto } from "$app/navigation";
 	import { page } from '$app/stores'
 	import debounce from 'debounce';	
-	import { format } from 'svelte-ux';
+	import { format, truncate } from 'svelte-ux';
 
 	
 	import {createTable, Subscribe, Render,	createRender} from "svelte-headless-table";
 	import {addSortBy, addPagination,	addTableFilter,
 		addSelectedRows,addHiddenColumns, addResizedColumns	} from "svelte-headless-table/plugins";
 
-	import { readable, writable, type Writable } from "svelte/store";
+	import { writable, type Writable } from "svelte/store";
 	import * as Table from "$lib/components/ui/table";
 	import  Actions  from "./data-table-actions.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { CaretSort, ChevronDown, ChevronUp } from "radix-icons-svelte";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
-	import { cn } from "$lib/utils";
 	import { Input } from "$lib/components/ui/input";
 
 
@@ -36,18 +35,14 @@
 		page: addPagination({
 			serverItemCount: writable(data[0].num_entries ),
 			serverSide: true,
+			
 		}),
-		filter: addTableFilter({
-			serverSide: true,
-			// fn: ({ filterValue, value }) => value.includes(filterValue)
-		}),
+		filter: addTableFilter({serverSide: true}),
 		select: addSelectedRows(),
 		hide: addHiddenColumns()
 	});
 
-	const columns = table.createColumns([
-
-	
+	const columns = table.createColumns([	
 		table.column({
 			header: "CIK",
 			accessor: "cik",
@@ -55,10 +50,14 @@
 			filter: { exclude: false }
 		}
 		}),
-		table.column({ header: "Superinvestor", accessor: "cik_name"}),
+		
+
+		table.column({ header: "Investor", accessor: "cik_name"}),
+
+		
 
 		table.column({
-			header: "Cumulative TWRR",
+			header: "Cumulative RR(cons)",
 			accessor: "cum_twrr_cons",
 			cell: ({ value }) => {
 				const formatted = format(value/100, "percent");
@@ -76,27 +75,61 @@
 
 
 		table.column({
-			header: "Cumulative TWRR Yahoo",
+			header: "Total Return",
 			accessor: "cum_twrr_yahoo",
 			cell: ({ value }) => {
 				const formatted = format(value/100, "percent");
 				return formatted;
-    },
-	
+			},	
+				}),
+		
+		table.column({
+			header: "Last Qtr Return",
+			accessor: "qtr_return_yahoo",
+			cell: ({ value }) => {
+				const formatted = format(value/100, "percent");
+				return formatted;
+			},	
+				}),
+		
+		table.column({
+			header: "Value",
+			accessor: "value",
+			cell: ({ value }) => {
+				const formatted = format(value, "metric", { maximumSignificantDigits: 4 });
+				return '$' + formatted;
+    },	
 		}),
 		
 		table.column({
-			header: "Actions",
-			accessor: ({ cik }) => cik,
-			cell: (item) => {
-				return createRender(Actions, { id: item.value });
-			},
-			plugins: {
-				sort: {
-					disable: true
-				}
-			},
-		})
+			header: "# of Assets",
+			accessor: "num_assets",
+			cell: ({ value }) => {
+				const formatted = format(value, "integer");
+				return formatted;
+    },	
+		}),
+
+		table.column({
+			header: "Active",
+			accessor: "active_from",
+			plugins: { sort: { disable: false }, 
+			filter: { exclude: false }
+		}
+		}),
+		
+		// table.column({
+		// 	header: "",
+		// 	accessor: ({ cik }) => cik,
+		// 	cell: (item) => {
+		// 		return createRender(Actions, { id: item.value });
+		// 	},
+		// 	plugins: {
+		// 		sort: {
+		// 			disable: true
+		// 		}
+		// 	},
+		// }),
 	]);
 
 	const {
@@ -107,6 +140,8 @@
 		flatColumns,
 		pluginStates,
 	} = table.createViewModel(columns);
+
+	// const {pageSize, pageIndex } = pluginStates.page;
 
 	const { sortKeys } = pluginStates.sort;
 	const { columnWidths } = pluginStates.resize;
@@ -128,7 +163,7 @@
 	$: limit_param = Number($page.url.searchParams.get('limit') || 0);
 
 	$: filter = q || '';
-	$: $pageSize =  limit_param || 5;
+	$: $pageSize =  limit_param || 7;
 	$: $pageIndex = (skip_param / limit_param) || 0;
 
 	$:_totalRows = data[0].num_entries;
@@ -136,17 +171,6 @@
 
 
 	const { selectedDataIds } = pluginStates.select;
-
-
-	// async function updateQuery() {
-	// 	const q = new URLSearchParams();
-	// 	q.set('order_by', $sortKeys[0].id);
-	// 	q.set('order_dir', $sortKeys[0].order);
-	// 	q.set('filter', $filterValue);
-	// 	q.set('limit', String($pageSize));
-	// 	q.set('skip', String($pageSize * $pageIndex));
-	// };
-
 	const hideableCols = ["cum_twrr_cons", "cik"];
 
 	$: _sortKeys = $sortKeys;
@@ -166,12 +190,8 @@
 		{  replaceState: true, keepFocus: true });
   }, 200);
 
-// TODO: Displayed entries and pages are wrong when clicking next multiple Times
-// and then using search box. The paging gets all messed up
 
 </script>
-<!-- {pathname} -->
-<!-- <pre>$hiddenColumnIds = {JSON.stringify($hiddenColumnIds, null, 2)}</pre> -->
 
 <div class="w-full">
 	<div class="mb-4 flex items-center gap-4">
@@ -215,8 +235,10 @@
 									props={cell.props()}
 									let:props
 								>
-									<Table.Head class="w-1/6"
-										{...attrs}
+								<!-- class="max-w-[14ch]" -->
+								<!-- class="w-1/6" -->
+									<Table.Head 
+									{...attrs}
 									>
 										{#if props.sort.disabled}
 											<Render of={cell.render()} />
@@ -254,6 +276,7 @@
 								<Subscribe attrs={cell.attrs()} let:attrs>
 									<Table.Cell 
 										{...attrs}
+									
 									>
                                     {#if cell.id === 'cik_name'}
                                     <!-- <a href="/{row.cells[0].id}"  -->
@@ -261,7 +284,17 @@
                                         <!-- <a href="/{data.find(d => d.cik_name === cell.value)?.cik}" -->
                                         <!-- <a href="/{row.cells.find(c => c.id === 'cik')?.value}"   -->
                                             <a href="/superinvestors/{row.original.cik}"
-                                            class="line-clamp-1">{cell.value}</a>
+                                            >{truncate(cell.value, 20)}</a>
+											{:else if ['cum_twrr_yahoo', 'qtr_return_yahoo', 'cum_twrr_cons'].includes(cell.id)}
+											<div class:text-center={cell.render()} class:text-green-500={cell.value > 0} class:text-red-500={cell.value <= 0}>
+												{cell.render()}
+												<!-- <Render of={cell.render()} /> -->
+											</div>
+
+											{:else if [ 'value', 'num_assets', 'cik', 'cum_twrr_yahoo', 'qtr_return_yahoo', 'cum_twrr_cons'].includes(cell.id)}
+											<div class="text-center">{cell.render()}
+											</div>
+												
                                     {:else}
                                         <Render of={cell.render()} />
                                     {/if}

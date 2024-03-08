@@ -68,7 +68,13 @@ export function getCik(
 		r.cik_name,
 		cum_mean_twrr_per_cik_per_qtr_cons AS cum_twrr_cons,
 		cum_mean_twrr_per_cik_per_qtr_yahoo AS cum_twrr_yahoo,
-		(select count(*) from cik_md) AS initial_num_entries
+		mean_curr_twrr_per_cik_per_qtr_yahoo AS qtr_return_yahoo,
+		(select count(*) from cik_md) AS initial_num_entries,
+		CASE WHEN active = 'ACTIVE' THEN first_qtr || ' - ' || 'Now'
+       			ELSE first_qtr || ' - ' || last_qtr
+  			END AS active_from,
+		ttl_value_per_cik_per_qtr AS value,
+		num_assets_per_cik_per_qtr AS num_assets
 		FROM every_cik_latest_qtr_stats l
 		LEFT JOIN
 		(SELECT cik, cik_name

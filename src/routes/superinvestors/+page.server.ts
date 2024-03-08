@@ -11,11 +11,13 @@ const maxQuarter = uniqueQuartersList.at(-1);
 const maxQuarterIndex = uniqueQuartersList.indexOf(maxQuarter);
 
 export const load = async ({ url }) => {
-	const limit = Number(url.searchParams.get('limit')) || 5;
+	const limit = Number(url.searchParams.get('limit')) || 7;
 	const skip = Number(url.searchParams.get('skip')) || 0;
 	const q = url.searchParams.get('q')?.toString() || '';
 	const order_by = url.searchParams.get('order_by')?.toString() || 'id';
 	const order_dir = url.searchParams.get('order_dir')?.toString() || 'asc';
+
+	const ciks = getCik(limit, q, skip, order_by, order_dir);
 
 	console.log('q', q);
 	/////////////////////////////////////////
@@ -29,7 +31,7 @@ export const load = async ({ url }) => {
 	const top_10_ciks_value = getTopTenCikValue(quarter);
 
 	return {
-		ciks: getCik(limit, q, skip, order_by, order_dir),
+		ciks: ciks,
 		qtrStats: getQtrStats(),
 		top_10_ciks_twrr_yahoo: top_10_ciks_twrr_yahoo,
 		top_10_ciks_value: top_10_ciks_value,

@@ -149,8 +149,8 @@ function handleTabClick_top_ten(event: CustomEvent<string>) {
 };
 
 let tabTitles_top_ten: Record<string, string> = {
-	'value': 'Top 10 by Value',
-	'return': 'Top 10 by Return',
+	'value': 'Top 10 by',
+	'return': 'Top 10 by',
 };
 //////////////////////////////////////////////
 
@@ -626,36 +626,35 @@ let isActive = false;
 					</Card.Root>
 
 
+
 					<Card.Root class="col-span-3">
 						<Tabs.Root bind:value={activeTab_top_ten}>
 										
-							<div class="flex items-center justify-between gap-2">
-								<h3 class="px-4 pt-2 font-semibold leading-none tracking-tight">{tabTitles_top_ten[activeTab_top_ten]}</h3>
-								<div class="pt-2 flex items-center gap-2">
-									<form data-sveltekit-keepfocus data-sveltekit-noscroll class="flex items-center">  
+							<div class="flex items-center justify-between mt-2">
+								<h3 class="text-xl pl-4 pr-1 font-semibold leading-none tracking-tight">{tabTitles_top_ten[activeTab_top_ten]}</h3>
+								<div class="mr-2">
+									<Tabs.List>
+										<Tabs.Trigger class="flex-grow text-center font-bold" value="return">Return</Tabs.Trigger>
+										<Tabs.Trigger class="flex-grow text-center font-bold" value="value">Value</Tabs.Trigger>
+									</Tabs.List>
+								</div>
+								
+								<div class="flex items-center gap-2 flex-grow">
+									<form data-sveltekit-keepfocus data-sveltekit-noscroll class="flex items-center flex-grow">
 										<input type="range" name="quarter_id"
-										min="0" 
-										max={quarters.length -  1} 
-										bind:value={quarter_id}
-										on:change={e=>e.currentTarget.form?.requestSubmit()}
-										class="w-[200px]"
-										/>
-
-
+											min="0" 
+											max={quarters.length -  1} 
+											bind:value={quarter_id}
+											on:change={e=>e.currentTarget.form?.requestSubmit()}
+											class="w-full"											
+											style="accent-color: #b09d4f;">
 									</form>
-									<h3 class="font-semibold leading-none tracking-tight text-chart">{quarters[+quarter_id]}</h3>
-							</div>
+									<h3 class="text-xl font-semibold leading-none tracking-tight text-chart flex-shrink-0" style="width: 100px;">{quarters[+quarter_id]}</h3>
+								</div>
 
-
-
-							<div class="mt-2 mx-4">
-								<Tabs.List>
-									<Tabs.Trigger class="flex-grow text-center" value="return">Return</Tabs.Trigger>
-									<Tabs.Trigger class="flex-grow text-center" value="value">Value</Tabs.Trigger>
-								</Tabs.List>
 							</div>
-							</div>
-							<Tabs.Content value="value" class="space-y-2">
+							
+							<Tabs.Content value="value" class="space-y-2 ">
 								<Card.Content>
 									<ObservablePlot options={optionsTopTenValue} />							
 								</Card.Content>								
@@ -676,7 +675,7 @@ let isActive = false;
 				</div>
 
 				<h2
-				class="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0"
+				class="scroll-m-20 text-3xl font-semibold tracking-tight transition-colors first:mt-0"
 				>
 				Value, Assets & Positions
 				</h2>
@@ -716,9 +715,9 @@ let isActive = false;
 									max={quarters.length -  1} 
 									bind:value={quarter_id}
 									on:change={event => event.target?.form?.requestSubmit()}
-									class=" w-[200px] h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-
+									class=" accent-black w-[200px] h-2 bg-gray-200 rounded-md dark:bg-gray-700"
 									/>
+									<!-- style="accent-color: #f5f5f5;" -->
 									
 									</form>
 									<h3 class="font-semibold leading-none tracking-tight text-chart">{quarters[+quarter_id]}</h3>
