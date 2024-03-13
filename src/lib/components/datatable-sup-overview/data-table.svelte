@@ -52,12 +52,15 @@
 		}),
 		
 
-		table.column({ header: "Investor", accessor: "cik_name"}),
+		table.column({ header: "Investor", accessor: "cik_name",
+			cell: ({ value }) => {
+				return value.toUpperCase();
+			}}),
 
 		
 
 		table.column({
-			header: "Cumulative RR(cons)",
+			header: "Compound Return(cons)",
 			accessor: "cum_twrr_cons",
 			cell: ({ value }) => {
 				const formatted = format(value/100, "percent");
@@ -75,7 +78,7 @@
 
 
 		table.column({
-			header: "Total Return",
+			header: "Compound Return",
 			accessor: "cum_twrr_yahoo",
 			cell: ({ value }) => {
 				const formatted = format(value/100, "percent");
@@ -147,7 +150,8 @@
 	const { columnWidths } = pluginStates.resize;
 
 	const { hiddenColumnIds } = pluginStates.hide;
-	const initialHiddenColumnIds = ['cik', 'cum_twrr_cons'];
+	const hideableCols = ["cum_twrr_cons", "cik", "qtr_return_yahoo", "qtr_return_yahoo"];
+	const initialHiddenColumnIds = ['cik', 'cum_twrr_cons', 'qtr_return_yahoo'];
 	const ids = flatColumns.map((c) => c.id);
 	let hideForId = Object.fromEntries(ids.map((id) => [id, !initialHiddenColumnIds.includes(id)]));
 	
@@ -166,12 +170,13 @@
 	$: $pageSize =  limit_param || 7;
 	$: $pageIndex = (skip_param / limit_param) || 0;
 
+
 	$:_totalRows = data[0].num_entries;
 	$: _totalPages = Math.ceil(_totalRows / $pageSize)
 
 
 	const { selectedDataIds } = pluginStates.select;
-	const hideableCols = ["cum_twrr_cons", "cik"];
+	
 
 	$: _sortKeys = $sortKeys;
 	
@@ -197,7 +202,7 @@
 	<div class="mb-4 flex items-center gap-4">
 		<Input
 		class="max-w-sm" 
-		placeholder="Filter superinvestors..."
+		placeholder="Search investors..."
 		type="search"
 		bind:value={filter}
 		on:input={handleFilterChange} 
@@ -236,8 +241,8 @@
 									let:props
 								>
 								<!-- class="max-w-[14ch]" -->
-								<!-- class="w-1/6" -->
-									<Table.Head 
+								<!-- class="w-1/7" -->
+								<Table.Head 
 									{...attrs}
 									>
 										{#if props.sort.disabled}
@@ -284,8 +289,9 @@
                                         <!-- <a href="/{data.find(d => d.cik_name === cell.value)?.cik}" -->
                                         <!-- <a href="/{row.cells.find(c => c.id === 'cik')?.value}"   -->
                                             <a href="/superinvestors/{row.original.cik}"
-                                            >{truncate(cell.value, 20)}</a>
-											{:else if ['cum_twrr_yahoo', 'qtr_return_yahoo', 'cum_twrr_cons'].includes(cell.id)}
+                                            >{truncate(cell.value, 22).toUpperCase()}</a>
+
+									{:else if ['cum_twrr_yahoo', 'qtr_return_yahoo', 'cum_twrr_cons'].includes(cell.id)}
 											<div class:text-center={cell.render()} class:text-green-500={cell.value > 0} class:text-red-500={cell.value <= 0}>
 												{cell.render()}
 												<!-- <Render of={cell.render()} /> -->

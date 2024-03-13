@@ -5,12 +5,18 @@ export type QtrStats = {
 	ttl_num_ciks_per_qtr: number;
 	ttl_num_assets_all_ciks_per_qtr: number;
 	ttl_num_positions_per_qtr: number;
+	open_positions_per_qtr: number;
+	close_positions_per_qtr: number;
 	open_close_ratio: number;
 	num_stopped_ciks: number;
+	ratio_new_stopped_ciks: number;
 	num_new_ciks: number;
 	mean_curr_twrr_all_ciks_per_qtr_cons: number;
-	mean_curr_twrr_all_ciks_per_qtr_yahoo: number;
+	qtr_return_yahoo: number;
+	compound_return_yahoo: number;
 	is_quarter_completed: string;
+	num_stopped_cusips: string;
+	num_new_cusips: string;
 	ratio_new_stopped_cusips: string;
 };
 
@@ -23,6 +29,8 @@ export type Totals = {
 	incomplete_qtr: string;
 	last_full_qtr: number;
 	last_full_value: number;
+	last_compound_twrr: number;
+	last_curr_twrr: number;
 	last_load_date: string;
 };
 

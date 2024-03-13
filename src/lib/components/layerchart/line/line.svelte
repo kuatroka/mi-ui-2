@@ -23,7 +23,7 @@
 
 </script>
 
-<div class="h-[400px] p-4 border rounded group">
+<!-- <div class="h-[400px] p-4 border rounded group"> -->
 
   <Chart
   
@@ -60,7 +60,7 @@
       tickFormat="percentRound"
     /> -->
   </Chart>
-</div>
+<!-- </div> -->
 
 
 

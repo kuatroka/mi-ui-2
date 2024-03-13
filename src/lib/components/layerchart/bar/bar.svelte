@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {scaleTime, scaleBand } from 'd3-scale';
+    import { scaleBand } from 'd3-scale';
 
     import { format } from 'date-fns';
     import { PeriodType, formatDate, format as formatMetric } from 'svelte-ux';
@@ -21,7 +21,7 @@
 
 </script>
 
-<div class="h-[400px] p-4 border rounded group">
+<!-- <div class="h-[400px] p-4 border rounded group"> -->
   <Chart
     {data}
     x={x}
@@ -30,7 +30,7 @@
     yDomain={[0, maxValue]}
     yNice
     padding={{ left: 26, bottom: 24 }}
-    tooltip={{ mode: "band" }}
+    tooltip={{ mode: "band", }}
   >
     <Svg>
       <Axis placement="left" grid  format={(d) => formatMetric(d, 'metric')}/>
@@ -56,11 +56,11 @@
 
         />
     </Svg>
-    <Tooltip header={(data) => format(data[x], 'y QQQ')} let:data>
+    <Tooltip header={(data) => format(data[x], 'y QQQ')} let:data class="bg-primary" >
       <TooltipItem label={y} value={formatMetric(data[y], 'integer')} />
     </Tooltip>
   </Chart>
-</div>
+<!-- </div> -->
 
 
 

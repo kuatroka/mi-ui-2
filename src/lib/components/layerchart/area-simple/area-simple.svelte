@@ -10,7 +10,7 @@
 </script>
 
 
-<div class="h-[330px] p-4 border rounded">
+<!-- <div class="h-[330px] p-4 border rounded"> -->
 <Chart
     {data}
     x="date"
@@ -39,5 +39,5 @@
     <TooltipItem label="value" value={data.value} />
     </Tooltip>
 </Chart>
-</div>
+<!-- </div> -->
 

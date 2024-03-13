@@ -15,6 +15,8 @@ export function getTotals(): Totals[] {
 	incomplete_qtr,
 	last_full_qtr,
 	last_full_value,
+	last_curr_twrr,
+	last_compound_twrr,
 	last_load_date
 	FROM totals
 `;
@@ -35,12 +37,18 @@ export const getQtrStats = (quarter?: string): QtrStats[] => {
 	ttl_num_ciks_per_qtr,
 	ttl_num_assets_all_ciks_per_qtr,
 	ttl_num_positions_per_qtr,
+	open_positions_per_qtr,
+	close_positions_per_qtr,
 	open_close_ratio,
-	mean_curr_twrr_all_ciks_per_qtr_cons,
+	cum_mean_twrr_all_ciks_per_qtr_yahoo AS compound_return_yahoo,
 	mean_curr_twrr_all_ciks_per_qtr_yahoo,
+	mean_curr_twrr_all_ciks_per_qtr_yahoo AS qtr_return_yahoo,
 	num_stopped_ciks,
 	num_new_ciks,
+	ratio_new_stopped_ciks,
 	is_quarter_completed,
+	num_stopped_cusips,
+	num_new_cusips,
 	ratio_new_stopped_cusips
 	FROM every_qtr_twrr
 	${quarter ? 'WHERE quarter = ?' : ''}
@@ -48,7 +56,7 @@ export const getQtrStats = (quarter?: string): QtrStats[] => {
 	`;
 	const stmnt = db.prepare(sql);
 	const rows = quarter ? stmnt.all(quarter) : stmnt.all();
-	// console.log(rows.slice(0));
+	// console.log(rows.slice(0, 3));
 	// console.log(rows.length);
 	return rows as QtrStats[];
 };

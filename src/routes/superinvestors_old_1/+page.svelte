@@ -174,8 +174,8 @@ function handleTabClick_value_ass_pos(event: CustomEvent<string>) {
 
 let tabTitles_value_ass_pos: Record<string, string> = {
 	'value': 'Total Value ($)',
-	'ciks': '# of Investors',
-	'assets': '# of Assets',
+	'ciks': '# of Unique Investors',
+	'assets': '# of Unique Assets',
 	'positions': '# of Positions',
 };
 //////////////////////////////////////////////
@@ -372,7 +372,7 @@ let isActive = false;
 			<div class="flex items-center gap-2 text-md font-medium">
 				<Tabs.List >
 					<Tabs.Trigger value="overview" class="text-md font-bold">Overview</Tabs.Trigger>
-						<Tabs.Trigger value="analytics" class="text-md font-bold">Analytics</Tabs.Trigger>					
+					<Tabs.Trigger value="analytics" class="text-md font-bold">Analytics</Tabs.Trigger>
 					<Tabs.Trigger value="reports" disabled class="text-md font-bold">Reports</Tabs.Trigger>
 					<Tabs.Trigger value="notifications" disabled class="text-md font-bold">Notifications</Tabs.Trigger>
 				</Tabs.List>
@@ -450,14 +450,13 @@ let isActive = false;
 
 					<Card.Root>
 
-						<Card.Content class="flex self-center mt-5">  
-							<!-- TODO: need to properly align this timeline dynamically between top and bottom -->
+						<Card.Content class="flex self-center mt-5">
 
 							<div class="flex items-center">
 							<ul class="timeline timeline-vertical [--timeline-col-start:rem]">
 								<ul class="timeline timeline-vertical [--timeline-col-start:6rem]">
 									<li>
-										<div class="timeline-start tracking-tight text-sm font-medium">{last_load_date?.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
+										<div class="timeline-start tracking-tight text-sm font-medium">{currentDate?.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
 										<div class="timeline-middle">
 											<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
 											fill="currentColor" 
@@ -522,11 +521,150 @@ let isActive = false;
 				<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-7">
 					<!-- /////////////////////////////////////////////////////// Card - multiple tabs with table /////////////////////////////////////////////////////// -->		
 					<Card.Root class={isCardExpanded ? 'col-span-7' : 'col-span-4'}>
-						<h3 class="text-xl p-4 pr-1 font-semibold leading-none tracking-tight">Performance Overview</h3>
-						<Card.Content class="max-h-[400px]">
-							<DataTable data={entries_for_table}/>
-						<!-- TODO: Sort out the dynamic height as if I add more columns, the table get screwed up. The prev,next bottons are gone	 -->
-					</Card.Content>
+						<Tabs.Root>
+							<Tabs.List class=' flex mt-2 mx-6'>
+								<Tabs.Trigger class="flex-grow text-center" value="performance">Performance</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="value">Value</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="superinvestors">Superinvestors</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="assets">Assets</Tabs.Trigger>
+								<Tabs.Trigger class="flex-grow text-center" value="positions">Positions</Tabs.Trigger>
+							</Tabs.List>
+
+							<Tabs.Content value="performance" class="space-y-2">
+								<!-- <Card.Header>
+									<Card.Title>Overview</Card.Title>
+								</Card.Header> -->
+								<Card.Content class="max-h-[400px]">
+										<DataTable data={entries_for_table}/>
+									<!-- <AreaSimple /> -->
+								</Card.Content>								
+							</Tabs.Content>
+
+							<Tabs.Content value="value" class="space-y-2">
+								<Card.Content >
+									<div class="h-[400px] p-4 border rounded group">
+										<AreaClipped  data={entries_qtrstats_chart} y='value'/>	
+									</div>
+									<!-- <Button class="m-1"
+									on:click={toggleCardSize}
+									>
+									<Maximize />
+									</Button>							 -->
+								</Card.Content>
+							</Tabs.Content>	
+							
+							<Tabs.Content value="superinvestors" class="space-y-2">								
+								<Card.Content >
+									<Tabs.Root>
+										<div class="flex items-center justify-center gap-2">
+				
+											<Tabs.List>
+												<Tabs.Trigger class="flex-grow text-center" value="totals">Total</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="new_closed">New/Closed</Tabs.Trigger>
+											</Tabs.List>
+										</div>
+				
+										<Tabs.Content value="totals" class="space-y-2">
+											<Card.Content >
+												<div class="h-[400px] p-4 border rounded group">
+													<Bar data={entries_ciks} y='ciks'/>								
+												</div>
+											</Card.Content>								
+										</Tabs.Content>
+
+										<Tabs.Content value="new_closed" class="space-y-2">
+											<Card.Content >
+													<!-- <Line data={entries_qtrstats_chart} y='open_close'	/>	 -->
+													<div class="h-[350px] p-4 border rounded group">
+
+														<MultiLine
+														{categoryColours}
+														{multiSeriesFlatData}
+														{dataByCategory}
+														{series_columns}
+														/>							
+													</div>
+											</Card.Content>								
+										</Tabs.Content>
+				
+									</Tabs.Root>					
+								</Card.Content>
+							</Tabs.Content>
+
+
+							<Tabs.Content value="assets" class="space-y-2">								
+								<Card.Content>
+									<Tabs.Root>
+										<div class="flex items-center justify-center gap-2">
+				
+											<Tabs.List>
+												<Tabs.Trigger class="flex-grow text-center" value="totals">Total</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="new_closed">Started/Stopped Trading</Tabs.Trigger>
+											</Tabs.List>
+										</div>
+				
+										<Tabs.Content value="totals" class="space-y-2">
+											<Card.Content >
+												<div class="h-[350px] p-4 border rounded group">
+													<AreaClipped  data={entries_cusips} y='assets'/>								
+												</div>
+											</Card.Content>								
+										</Tabs.Content>
+
+										<Tabs.Content value="new_closed" class="space-y-2">
+											<Card.Content >
+												<div class="h-[350px] p-4 border rounded group">
+
+													<Line 
+													data={entries_cusips} 
+													y='ratio_new_stopped_cusips'
+													minValue={cusip_ratio_min}
+													maxValue={cusip_ratio_max}
+													{showRule}
+													{ruleClass}
+													/>							
+												</div>
+											</Card.Content>								
+										</Tabs.Content>
+				
+									</Tabs.Root>					
+								</Card.Content>
+							</Tabs.Content>
+							
+
+							<Tabs.Content value="positions" class="space-y-2">								
+								<Card.Content class="h-[360px]">
+									<Tabs.Root bind:value={activeTab}>
+										
+										<div class="flex items-center justify-between gap-2">
+											<h3 class="font-semibold leading-none tracking-tight">{tabTitles[activeTab]}</h3>
+											<Tabs.List>
+												<Tabs.Trigger class="flex-grow text-center" value="total">Total</Tabs.Trigger>
+												<Tabs.Trigger class="flex-grow text-center" value="ratio_oc_positions">Ratio</Tabs.Trigger>
+											</Tabs.List>
+										</div>
+										<Tabs.Content value="total" class="space-y-2 ">
+											<Card.Content >
+												<div class="h-[350px] p-4 border rounded group">
+													<!-- <Bar data={entries_qtrstats_chart} y='positions'/>	 -->
+													<AreaClipped  data={entries_positions} y='positions'/>							
+												</div>
+											</Card.Content>								
+										</Tabs.Content>
+										
+										<Tabs.Content value="ratio_oc_positions" class="space-y-2">
+											<Card.Content >
+												<div class="h-[350px] p-4 border rounded group">
+													<Line data={entries_positions} y='open_close'	/>								
+												</div>
+											</Card.Content>								
+										</Tabs.Content>
+				
+									</Tabs.Root>					
+								</Card.Content>
+							</Tabs.Content>
+
+						</Tabs.Root>
 					</Card.Root>
 
 
@@ -575,13 +713,14 @@ let isActive = false;
 					</Card.Root>
 
 
+
 				</div>
 
-				<!-- <h2
+				<h2
 				class="scroll-m-20 text-3xl font-semibold tracking-tight transition-colors first:mt-0"
 				>
 				Value, Assets & Positions
-				</h2> -->
+				</h2>
 
 				<!-- ///////////////////////////////////////////////////// -->
 				<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-7">   <!-- This is the section of two cards -->

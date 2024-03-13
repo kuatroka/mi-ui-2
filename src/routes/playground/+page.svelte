@@ -140,6 +140,7 @@
     }
 //////////////////////
 
+
     // options for eCharts 
 const options: EChartsOptions = {
   legend: {padding: 10, left: 'left', top: 'top', orient: 'vertical'},
@@ -183,6 +184,31 @@ let optionsQuarters = [
 
 $: quarters_index =  -1 ?? -1;
 $: quarter = quarters[quarters.length - 1] ;
+
+// $: optionsTopTenTwrrYahoo = 
+// 		{
+// 		width: 1500,
+// 		height: 400,
+// 		marginLeft: 0,
+// 		marginTop: 0,
+// 		x: {label: "Cumulative Return (%)"},
+// 		marks: [
+
+// 			Plot.barX(top_10_ciks_twrr_yahoo, {x: "cum_twrr_yahoo", y: "cik_name", fill: 'var(--chart-observable)', sort: {y: "x", reverse: true},
+// 			channels: { cik: 'cik', Superinvestor: "cik_name" },
+// 			tip: {fill: 'var(--chart-foreground-observable)', fontSize: 12, stroke: 'black'},
+// 			// stroke: 'var(--chart-foreground-observable)'
+// 		 },	),
+// 			Plot.axisY({
+// 			label: null,
+// 			textAnchor: "start",
+// 			lineWidth: 20,
+// 			fill: 'black',
+// 			dx: 14,
+// 			tickSize: 0,
+// 			}),
+// 		]
+// 		};
   
   
 </script>
@@ -573,11 +599,266 @@ showRule={true} /> -->
 </div> -->
 
 
+					<!-- /////////////////////////////////////////////////////// Start /////////////////////////////////////////////////////// -->
+					<!-- <Card.Root class="col-span-3">
+						<Card.Header class="flex justify-between">
+							<Card.Title class="flex items-center gap-2">Top 10
+
+							<div class="flex items-center gap-2"> -->
+									<!-- <form data-sveltekit-keepfocus data-sveltekit-noscroll class="flex items-center">   --> -->
+										<!-- <input type="range" name="quarter_id"
+										min="0" 
+										max={quarters.length -  1} 
+										bind:value={quarter_id}
+										on:change={e=>e.currentTarget.form?.requestSubmit()}
+										class="w-[200px]"
+										/> -->
+									<!-- <Range 
+									name="quarter_id"
+									id="medium-range" 
+									min="0" 
+									max={quarters.length -  1} 
+									bind:value={quarter_id}
+									on:change={event => event.target?.form?.requestSubmit()}
+									class=" accent-black w-[200px] h-2 bg-gray-200 rounded-md dark:bg-gray-700"
+									/> -->
+								
+									<!-- </form> -->
+									<!-- <h3 class="font-semibold leading-none tracking-tight text-chart">{quarters[+quarter_id]}</h3>
+							</div> -->
+
+							<!-- <div>
+								<ToggleGroup.Root type="single">
+									<ToggleGroup.Item value="bold" aria-label="Toggle return">
+										<p>Return</p>
+									</ToggleGroup.Item>
+									<ToggleGroup.Item value="italic" aria-label="Toggle value">
+										<p>Value</p>
+
+									</ToggleGroup.Item>
+								  </ToggleGroup.Root>
+							</div> -->
+							
+							<!-- </Card.Title>
+						</Card.Header>
+
+						<Card.Content>
+								<ObservablePlot options={optionsTopTenTwrrYahoo}  />
+						</Card.Content>
+					</Card.Root> -->
 
 
-<!-- <style>
-.app {
-    width: 100vw;
-    height: 100vh;
-}
-</style> -->
+
+<!-- Times line component Start ////////////////////////// -->
+				<!-- <Card.Root class="">
+
+					<Card.Content class="mt-2">
+						<ul class="timeline timeline-vertical [--timeline-col-start:7rem]">
+							<li>
+								<div class="timeline-start">{new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</div>
+								<div class="timeline-middle">
+									<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+									fill="currentColor" 
+									class="w-5 h-5"><path 
+									fill-rule="evenodd" 
+									d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+								</div>
+								<div class="timeline-end timeline-box bg-background">Last Data Load</div>
+								<hr/>
+							</li>
+
+						<li>
+							{#if entries_totals.at(0)?.incomplete_qtr}
+								<hr/>
+								<div class="timeline-start">{entries_totals.at(0)?.incomplete_qtr}</div>
+								<div class="timeline-middle">
+									<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+									fill="currentColor" 
+									class="w-5 h-5"><path 
+									fill-rule="evenodd" 
+									d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+								</div>
+								<div class="timeline-end timeline-box bg-background flex items-center">
+									{#if Math.abs(timeDifference) === 0}
+										In Progress - Last day
+									{:else}
+										In Progress ({Math.abs(timeDifference)} days left)
+									{/if}
+										
+										<Switch 
+										id="add-partial-qtr"
+										class="ml-auto mx-1"
+										bind:checked={showIncomple}
+										>
+										</Switch>
+											
+								</div>
+
+								<hr/>									
+							{/if}
+
+						</li>
+						<li>
+							<hr/>
+							<div class="timeline-start">{entries_totals.at(0)?.last_full_qtr}</div>
+							<div class="timeline-middle">
+								<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" 
+								fill="currentColor" 
+								class="w-5 h-5"><path 
+								fill-rule="evenodd" 
+								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+							</div>
+							<div class="timeline-end timeline-box bg-background">Last Full Quarter</div>
+						</li>
+						</ul>
+					</Card.Content>
+				</Card.Root> -->
+                
+                <!-- Times line component End ////////////////////////// -->
+
+<!-- Card with multiple tabs and table Start ////////////////////////// -->
+
+<!-- <Card.Root class={isCardExpanded ? 'col-span-7' : 'col-span-4'}>
+    <Tabs.Root>
+        <Tabs.List class=' flex mt-2 mx-6'>
+            <Tabs.Trigger class="flex-grow text-center" value="performance">Performance</Tabs.Trigger>
+            <Tabs.Trigger class="flex-grow text-center" value="value">Value</Tabs.Trigger>
+                            <Tabs.Trigger class="flex-grow text-center" value="superinvestors">Superinvestors</Tabs.Trigger>
+                            <Tabs.Trigger class="flex-grow text-center" value="assets">Assets</Tabs.Trigger>
+                            <Tabs.Trigger class="flex-grow text-center" value="positions">Positions</Tabs.Trigger>
+                        </Tabs.List>
+
+                        <Tabs.Content value="performance" class="space-y-2">
+
+                            <Card.Content class="max-h-[400px]">
+                                    <DataTable data={entries_for_table}/>
+
+                            </Card.Content>								
+                        </Tabs.Content>
+
+                        <Tabs.Content value="value" class="space-y-2">
+                            <Card.Content > -->
+                                <!-- <div class="h-[400px] p-4 border rounded group">
+                                    <AreaClipped  data={entries_qtrstats_chart} y='value'/>	
+                                </div> -->
+                                <!-- <Button class="m-1"
+                                on:click={toggleCardSize}
+                                >
+                                <Maximize />
+                                </Button>							 -->
+                            <!-- </Card.Content>
+                        </Tabs.Content>	 -->
+                        
+                        <!-- <Tabs.Content value="superinvestors" class="space-y-2">								
+                            <Card.Content >
+                                <Tabs.Root>
+                                    <div class="flex items-center justify-center gap-2">
+            
+                                        <Tabs.List>
+                                            <Tabs.Trigger class="flex-grow text-center" value="totals">Total</Tabs.Trigger>
+                                            <Tabs.Trigger class="flex-grow text-center" value="new_closed">New/Closed</Tabs.Trigger>
+                                        </Tabs.List>
+                                    </div>
+            
+                                    <Tabs.Content value="totals" class="space-y-2">
+                                        <Card.Content >
+                                            <div class="h-[400px] p-4 border rounded group">
+                                                <Bar data={entries_ciks} y='ciks'/>								
+                                            </div>
+                                        </Card.Content>								
+                                    </Tabs.Content>
+
+                                    <Tabs.Content value="new_closed" class="space-y-2">
+                                        <Card.Content >
+                                                <div class="h-[350px] p-4 border rounded group">
+
+                                                    <MultiLine
+                                                    {categoryColours}
+                                                    {multiSeriesFlatData}
+                                                    {dataByCategory}
+                                                    {series_columns}
+                                                    />							
+                                                </div>
+                                        </Card.Content>								
+                                    </Tabs.Content>
+            
+                                </Tabs.Root>					
+                            </Card.Content>
+                        </Tabs.Content> -->
+
+
+                        <!-- <Tabs.Content value="assets" class="space-y-2">								
+                            <Card.Content>
+                                <Tabs.Root>
+                                    <div class="flex items-center justify-center gap-2">
+            
+                                        <Tabs.List>
+                                            <Tabs.Trigger class="flex-grow text-center" value="totals">Total</Tabs.Trigger>
+                                            <Tabs.Trigger class="flex-grow text-center" value="new_closed">Started/Stopped Trading</Tabs.Trigger>
+                                        </Tabs.List>
+                                    </div>
+            
+                                    <Tabs.Content value="totals" class="space-y-2">
+                                        <Card.Content >
+                                            <div class="h-[350px] p-4 border rounded group">
+                                                <AreaClipped  data={entries_cusips} y='assets'/>								
+                                            </div>
+                                        </Card.Content>								
+                                    </Tabs.Content>
+
+                                    <Tabs.Content value="new_closed" class="space-y-2">
+                                        <Card.Content >
+                                            <div class="h-[350px] p-4 border rounded group">
+
+                                                <Line 
+                                                data={entries_cusips} 
+                                                y='ratio_new_stopped_cusips'
+                                                minValue={cusip_ratio_min}
+                                                maxValue={cusip_ratio_max}
+                                                {showRule}
+                                                {ruleClass}
+                                                />							
+                                            </div>
+                                        </Card.Content>								
+                                    </Tabs.Content>
+            
+                                </Tabs.Root>					
+                            </Card.Content>
+                        </Tabs.Content> -->
+                        
+
+                        <!-- <Tabs.Content value="positions" class="space-y-2">								
+                            <Card.Content class="h-[360px]">
+                                <Tabs.Root bind:value={activeTab}>
+                                    
+                                    <div class="flex items-center justify-between gap-2">
+                                        <h3 class="font-semibold leading-none tracking-tight">{tabTitles[activeTab]}</h3>
+                                        <Tabs.List>
+                                            <Tabs.Trigger class="flex-grow text-center" value="total">Total</Tabs.Trigger>
+                                            <Tabs.Trigger class="flex-grow text-center" value="ratio_oc_positions">Ratio</Tabs.Trigger>
+                                        </Tabs.List>
+                                    </div>
+                                    <Tabs.Content value="total" class="space-y-2 ">
+                                        <Card.Content >
+                                            <div class="h-[350px] p-4 border rounded group">
+                                                <AreaClipped  data={entries_positions} y='positions'/>							
+                                            </div>
+                                        </Card.Content>								
+                                    </Tabs.Content>
+                                    
+                                    <Tabs.Content value="ratio_oc_positions" class="space-y-2">
+                                        <Card.Content >
+                                            <div class="h-[350px] p-4 border rounded group">
+                                                <Line data={entries_positions} y='open_close'	/>								
+                                            </div>
+                                        </Card.Content>								
+                                    </Tabs.Content>
+            
+                                </Tabs.Root>					
+                            </Card.Content>
+                        </Tabs.Content>
+
+                    </Tabs.Root>
+                </Card.Root> -->
+
+<!-- Card with multiple tabs and table End ////////////////////////// -->

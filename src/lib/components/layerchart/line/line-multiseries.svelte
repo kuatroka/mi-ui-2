@@ -40,7 +40,7 @@
 </script>
 <!-- <pre>{JSON.stringify(data.slice(0,4), null, 2)}</pre> -->
 
-<div class="h-[400px] p-4 border rounded">
+<!-- <div class="h-[400px] p-4 border rounded"> -->
   <Chart
     data={multiSeriesFlatData}
     x={x}
@@ -89,7 +89,7 @@
       <!-- {/each} -->
     <!-- </Tooltip> -->
   </Chart>
-</div>
+<!-- </div> -->
 
 
 

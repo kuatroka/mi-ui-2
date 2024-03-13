@@ -16,7 +16,7 @@
 
 </script>
 
-<div class="h-[400px] p-4 border rounded">
+<!-- <div class="h-[400px] p-4 border rounded"> -->
     <Chart
       data={data}
       x={x}
@@ -94,7 +94,7 @@
         {formatDate(data[x], 'y QQQ')}
       </Tooltip>
     </Chart>
-  </div>
+  <!-- </div> -->
 
   <!-- <style>
     :global(.x-axis .tick text) {
